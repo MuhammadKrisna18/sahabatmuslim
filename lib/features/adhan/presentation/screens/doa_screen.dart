@@ -7,9 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class DoaScreen extends StatelessWidget {
-  const DoaScreen({super.key});
+  DoaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class DoaScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.backgroundDark, size: 30),
+          icon: Icon(Icons.close, color: context.backgroundColor, size: 30),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -28,10 +29,10 @@ class DoaScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.mosque,
                   size: 80,
-                  color: AppColors.backgroundDark,
+                  color: context.backgroundColor,
                 )
                     .animate(onPlay: (controller) => controller.repeat(reverse: true))
                     .scaleXY(begin: 1.0, end: 1.1, duration: 2.seconds, curve: Curves.easeInOut),
@@ -41,7 +42,7 @@ class DoaScreen extends StatelessWidget {
                   style: GoogleFonts.amiri(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.backgroundDark,
+                    color: context.backgroundColor,
                   ),
                   textAlign: TextAlign.center,
                 ).animate().fade(duration: 800.ms).slideY(begin: -0.2, end: 0),
@@ -54,7 +55,7 @@ class DoaScreen extends StatelessWidget {
                       'اللّٰهُمَّ رَبَّ هٰذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ، آتِ سَيِّدَنَا مُحَمَّدًا الْوَسِيْلَةَ وَالْفَضِيْلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُوْدًا الَّذِيْ وَعَدْتَهُ',
                       style: GoogleFonts.amiri(
                         fontSize: 28,
-                        color: AppColors.backgroundDark,
+                        color: context.backgroundColor,
                         height: 1.8,
                       ),
                       textAlign: TextAlign.center,
@@ -65,7 +66,7 @@ class DoaScreen extends StatelessWidget {
                       'Allaahumma rabba haadzihid da\'watit taammah, washshalaatil qaa-imah, aati sayyidanaa muhammadanil wasiilata wal fadhiilah, wab\'atshu maqaamam mahmuudanil ladzii wa\'adtah',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
-                        color: AppColors.backgroundDark,
+                        color: context.backgroundColor,
                         fontStyle: FontStyle.italic,
                         height: 1.5,
                       ),
@@ -79,7 +80,7 @@ class DoaScreen extends StatelessWidget {
                       '"Ya Allah, Tuhan yang memiliki seruan yang sempurna dan shalat yang tetap didirikan, karuniakanlah Nabi Muhammad wasilah (tempat yang luhur) dan keutamaan (derajat yang tinggi), dan bangkitkanlah beliau pada kedudukan yang terpuji yang telah Engkau janjikan kepadanya."',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
-                        color: AppColors.textSecondaryLight,
+                        color: context.textSecondaryColor,
                         height: 1.5,
                       ),
                       textAlign: TextAlign.center,
@@ -90,7 +91,7 @@ class DoaScreen extends StatelessWidget {
               const SizedBox(height: 40),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.backgroundDark,
+                  backgroundColor: context.backgroundColor,
                   foregroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),

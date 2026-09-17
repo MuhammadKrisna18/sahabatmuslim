@@ -11,6 +11,7 @@ import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:expandable/expandable.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class DoaListScreen extends StatelessWidget {
   const DoaListScreen({super.key});
@@ -26,11 +27,11 @@ class DoaListScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.backgroundDark),
+        iconTheme: IconThemeData(color: context.backgroundColor),
         title: Text(
           'Doa & Dzikir',
           style: GoogleFonts.poppins(
-            color: AppColors.backgroundDark,
+            color: context.backgroundColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -38,7 +39,7 @@ class DoaListScreen extends StatelessWidget {
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.text_format, color: AppColors.backgroundDark),
+            icon: Icon(Icons.text_format, color: context.backgroundColor),
             tooltip: 'Pengaturan Teks',
             onPressed: () => TypographySettingsSheet.show(context),
           ),
@@ -58,8 +59,8 @@ class DoaListScreen extends StatelessWidget {
                 itemCount: 8,
                 itemBuilder: (context, index) {
                   return Shimmer.fromColors(
-                    baseColor: AppColors.backgroundDark.withOpacity(0.1),
-                    highlightColor: AppColors.backgroundDark.withOpacity(0.3),
+                    baseColor: context.backgroundColor.withOpacity(0.1),
+                    highlightColor: context.backgroundColor.withOpacity(0.3),
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       height: 65,
@@ -73,7 +74,7 @@ class DoaListScreen extends StatelessWidget {
               );
             }
             if (snapshot.hasError) {
-              return const Center(child: Text('Gagal memuat doa', style: TextStyle(color: AppColors.backgroundDark)));
+              return Center(child: Text('Gagal memuat doa', style: TextStyle(color: context.backgroundColor)));
             }
 
             final doaList = snapshot.data ?? [];
@@ -121,7 +122,7 @@ class DoaListScreen extends StatelessWidget {
                                 doa['arab']!,
                                 textAlign: TextAlign.right,
                                 style: GoogleFonts.amiri(
-                                  color: AppColors.backgroundDark,
+                                  color: context.backgroundColor,
                                   fontSize: settings.arabicFontSize,
                                   height: 2.0,
                                 ),
@@ -130,7 +131,7 @@ class DoaListScreen extends StatelessWidget {
                               Text(
                                 doa['latin']!,
                                 style: TextStyle(
-                                  color: AppColors.textPrimaryLight,
+                                  color: context.textPrimaryColor,
                                   fontStyle: FontStyle.italic,
                                   fontSize: settings.latinFontSize,
                                   height: 1.5,
@@ -140,7 +141,7 @@ class DoaListScreen extends StatelessWidget {
                               Text(
                                 "Arti:\n${doa['arti']}",
                                 style: TextStyle(
-                                  color: AppColors.textSecondaryLight,
+                                  color: context.textSecondaryColor,
                                   fontSize: settings.latinFontSize,
                                   height: 1.5,
                                 ),

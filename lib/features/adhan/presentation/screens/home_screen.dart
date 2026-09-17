@@ -16,6 +16,7 @@ import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provi
 import 'package:adhan_reminder/core/di/injection.dart';
 import 'package:adhan_reminder/core/services/notification_service.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -196,7 +197,7 @@ class _ScheduleListSection extends StatelessWidget {
               if (errorMessage != null)
                 Container(
                   margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.2),
                     border: Border.all(color: Colors.red.withOpacity(0.5)),
@@ -204,12 +205,12 @@ class _ScheduleListSection extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_off, color: AppColors.backgroundDark, size: 24),
-                      const SizedBox(width: 12),
+                      Icon(Icons.location_off, color: context.backgroundColor, size: 24),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           errorMessage,
-                          style: const TextStyle(color: AppColors.backgroundDark, fontSize: 13),
+                          style: TextStyle(color: context.backgroundColor, fontSize: 13),
                         ),
                       ),
                     ],
@@ -217,16 +218,16 @@ class _ScheduleListSection extends StatelessWidget {
                 ),
               const SizedBox(height: 20),
               if (schedules.isEmpty)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 50),
                   child: Text(
                     'Belum ada jadwal adzan.\nTekan pengaturan untuk menambahkan.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: AppColors.textSecondaryLight),
+                    style: TextStyle(fontSize: 16, color: context.textSecondaryColor),
                   ),
                 )
               else ...[
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -235,7 +236,7 @@ class _ScheduleListSection extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.backgroundDark,
+                        color: context.backgroundColor,
                       ),
                     ),
                   ),

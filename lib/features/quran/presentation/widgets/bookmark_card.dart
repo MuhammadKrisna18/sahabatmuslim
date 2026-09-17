@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/core/widgets/glass_card.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class BookmarkCard extends StatelessWidget {
   final int bookmarkedSurahNomor;
@@ -48,26 +49,26 @@ class BookmarkCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.menu_book, color: AppColors.backgroundDark, size: 24),
+                  child: Icon(Icons.menu_book, color: context.backgroundColor, size: 24),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Terakhir Dibaca', style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 13)),
-                      const SizedBox(height: 4),
-                      Text('Surah $bookmarkedSurahNama', style: const TextStyle(color: AppColors.backgroundDark, fontWeight: FontWeight.bold, fontSize: 16)),
-                      Text('Ayat $bookmarkedAyahNomor', style: const TextStyle(color: AppColors.backgroundDark, fontSize: 13)),
+                      Text('Terakhir Dibaca', style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
+                      SizedBox(height: 4),
+                      Text('Surah $bookmarkedSurahNama', style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text('Ayat $bookmarkedAyahNomor', style: TextStyle(color: context.backgroundColor, fontSize: 13)),
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios, color: AppColors.backgroundDark, size: 16),
+                Icon(Icons.arrow_forward_ios, color: context.backgroundColor, size: 16),
               ],
             ),
           ),

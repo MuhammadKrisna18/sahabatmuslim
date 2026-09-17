@@ -10,6 +10,7 @@ import 'package:adhan_reminder/features/qibla/presentation/providers/qibla_provi
 import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 class QiblaScreen extends StatefulWidget {
   const QiblaScreen({super.key});
   @override
@@ -25,12 +26,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.backgroundDark),
+        iconTheme: IconThemeData(color: context.backgroundColor),
         automaticallyImplyLeading: false,
         title: Text(
           'Arah Kiblat',
           style: GoogleFonts.poppins(
-            color: AppColors.backgroundDark,
+            color: context.backgroundColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -49,13 +50,13 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       const SizedBox(height: 200),
                       Center(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
                           child: Text(
                             qiblaProvider.errorMessage.isEmpty 
                               ? 'Mohon izinkan akses lokasi\nuntuk menentukan arah Kiblat.' 
                               : qiblaProvider.errorMessage,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 16),
+                            style: TextStyle(color: context.textSecondaryColor, fontSize: 16),
                           ),
                         ),
                       ),
@@ -67,7 +68,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                           label: const Text('Coba Lagi'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary.withOpacity(0.3),
-                            foregroundColor: AppColors.backgroundDark,
+                            foregroundColor: context.backgroundColor,
                           ),
                         ),
                       ),
@@ -80,12 +81,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
                         return ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           children: [
-                            const SizedBox(height: 200),
+                            SizedBox(height: 200),
                             Center(
                               child: Text(
                                 'Error membaca sensor kompas:\n${snapshot.error}', 
                                 textAlign: TextAlign.center, 
-                                style: const TextStyle(color: AppColors.backgroundDark)
+                                style: TextStyle(color: context.backgroundColor)
                               )
                             ),
                           ],
@@ -93,19 +94,19 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       }
 
                       if (snapshot.connectionState == ConnectionState.waiting || qiblaProvider.isLoading) {
-                        return const Center(child: CircularProgressIndicator(color: AppColors.backgroundDark));
+                        return Center(child: CircularProgressIndicator(color: context.backgroundColor));
                       }
 
                       double? heading = snapshot.data?.heading;
                       if (heading == null) {
                         return ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: const [
+                          physics: AlwaysScrollableScrollPhysics(),
+                          children: [
                             SizedBox(height: 200),
                             Center(
                               child: Text(
                                 'Sensor kompas tidak ditemukan di perangkat ini.', 
-                                style: TextStyle(color: AppColors.backgroundDark)
+                                style: TextStyle(color: context.backgroundColor)
                               )
                             ),
                           ],
@@ -113,7 +114,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       }
 
                       if (qiblaProvider.qiblaDirection == null) {
-                        return const Center(child: CircularProgressIndicator(color: AppColors.backgroundDark));
+                        return Center(child: CircularProgressIndicator(color: context.backgroundColor));
                       }
 
                       double diff = (heading - qiblaProvider.qiblaDirection!).abs() % 360;
@@ -139,8 +140,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
                               const SizedBox(height: 20),
                               Text(
                                 'Arah Kiblat: ${qiblaProvider.qiblaDirection!.toStringAsFixed(1)}°',
-                                style: const TextStyle(
-                                  color: AppColors.backgroundDark,
+                                style: TextStyle(
+                                  color: context.backgroundColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -190,10 +191,10 @@ class _QiblaScreenState extends State<QiblaScreen> {
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: [
-                                              const Positioned(top: 10, child: Text('U', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20))),
-                                              const Positioned(bottom: 10, child: Text('S', style: TextStyle(color: AppColors.backgroundDark, fontWeight: FontWeight.bold, fontSize: 20))),
-                                              const Positioned(right: 10, child: Text('T', style: TextStyle(color: AppColors.backgroundDark, fontWeight: FontWeight.bold, fontSize: 20))),
-                                              const Positioned(left: 10, child: Text('B', style: TextStyle(color: AppColors.backgroundDark, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              Positioned(top: 10, child: Text('U', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              Positioned(bottom: 10, child: Text('S', style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              Positioned(right: 10, child: Text('T', style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              Positioned(left: 10, child: Text('B', style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 20))),
                                               Container(width: 4, height: 260, color: AppColors.primary.withOpacity(0.05)),
                                               Container(width: 260, height: 4, color: AppColors.primary.withOpacity(0.05)),
                                             ],

@@ -8,6 +8,7 @@ import 'package:adhan_reminder/features/sholat/presentation/screens/cara_sholat_
 import 'package:adhan_reminder/features/quran/presentation/screens/quran_list_screen.dart';
 import 'package:adhan_reminder/core/widgets/mini_audio_player.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class MainMenuScreen extends StatefulWidget {
   const MainMenuScreen({super.key});
@@ -43,7 +44,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               child: Image.asset(
                 'assets/watermark.png',
                 fit: BoxFit.cover,
-                color: AppColors.backgroundDark,
+                color: context.backgroundColor,
                 colorBlendMode: BlendMode.srcATop,
               ),
             ),
@@ -102,7 +103,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
   Widget _buildNavItem(IconData icon, String label, int index, Key? key) {
     final isSelected = _currentIndex == index;
-    final color = isSelected ? AppColors.primary : AppColors.textSecondaryLight;
+    final color = isSelected ? AppColors.primary : context.textSecondaryColor;
     return GestureDetector(
       key: key,
       onTap: () {

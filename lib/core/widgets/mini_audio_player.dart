@@ -4,6 +4,7 @@ import 'package:adhan_reminder/features/quran/presentation/providers/quran_audio
 import 'package:go_router/go_router.dart';
 import 'dart:ui';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class MiniAudioPlayer extends StatelessWidget {
   const MiniAudioPlayer({super.key});
@@ -73,8 +74,8 @@ class MiniAudioPlayer extends StatelessWidget {
                     children: [
                       Text(
                         'Surah ${quranAudio.currentSurah!.namaLatin}',
-                        style: const TextStyle(
-                          color: AppColors.backgroundDark,
+                        style: TextStyle(
+                          color: context.backgroundColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -84,7 +85,7 @@ class MiniAudioPlayer extends StatelessWidget {
                       Text(
                         quranAudio.qoriNames[quranAudio.selectedQoriId] ?? 'Qori',
                         style: TextStyle(
-                          color: AppColors.textSecondaryLight,
+                          color: context.textSecondaryColor,
                           fontSize: 12,
                         ),
                         maxLines: 1,
@@ -104,7 +105,7 @@ class MiniAudioPlayer extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       quranAudio.isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-                      color: AppColors.backgroundDark,
+                      color: context.backgroundColor,
                       size: 32,
                     ),
                     onPressed: () {
@@ -119,9 +120,9 @@ class MiniAudioPlayer extends StatelessWidget {
                   ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close,
-                    color: AppColors.textSecondaryLight,
+                    color: context.textSecondaryColor,
                     size: 24,
                   ),
                   onPressed: () => quranAudio.stopAudio(),

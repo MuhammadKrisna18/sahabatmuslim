@@ -19,6 +19,7 @@ import 'package:adhan_reminder/features/settings/presentation/providers/settings
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 class SurahDetailScreen extends StatefulWidget {
   final Surah surah;
   final int? initialAyah;
@@ -107,7 +108,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
   void _showQoriSelection() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surfaceLight,
+      backgroundColor: context.surfaceColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -135,7 +136,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                     title: Text(
                       quranAudio.qoriNames[id] ?? 'Qori $id',
                       style: TextStyle(
-                        color: isAvailable ? AppColors.textPrimaryLight : AppColors.textSecondaryLight.withOpacity(0.5),
+                        color: isAvailable ? context.textPrimaryColor : context.textSecondaryColor.withOpacity(0.5),
                         decoration: isAvailable ? TextDecoration.none : TextDecoration.lineThrough,
                       ),
                     ),
@@ -197,8 +198,8 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                     color: Colors.transparent,
                     child: Text(
                       widget.surah.namaLatin,
-                      style: const TextStyle(
-                        color: AppColors.backgroundDark,
+                      style: TextStyle(
+                        color: context.backgroundColor,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -207,8 +208,8 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                 ),
                 Text(
                   '${widget.surah.tempatTurun} • ${widget.surah.jumlahAyat} Ayat',
-                  style: const TextStyle(
-                    color: AppColors.textSecondaryLight,
+                  style: TextStyle(
+                    color: context.textSecondaryColor,
                     fontSize: 12,
                   ),
                 ),
@@ -271,7 +272,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                       if (audioUrl != null) {
                         downloadProvider.downloadSurah(widget.surah, qoriId, audioUrl);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Mengunduh audio...')),
+                          SnackBar(content: Text('Mengunduh audio...')),
                         );
                       }
                     },
@@ -279,7 +280,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.text_format, color: AppColors.backgroundDark),
+                icon: Icon(Icons.text_format, color: context.backgroundColor),
                 tooltip: 'Pengaturan Teks',
                 onPressed: () => TypographySettingsSheet.show(context),
               ),
@@ -334,13 +335,13 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               if (isLoading)
                 Center(
                   child: Shimmer.fromColors(
-                    baseColor: AppColors.backgroundDark.withOpacity(0.3),
-                    highlightColor: AppColors.backgroundDark,
+                    baseColor: context.backgroundColor.withOpacity(0.3),
+                    highlightColor: context.backgroundColor,
                     child: Text(
                       'اللّٰه',
                       style: GoogleFonts.amiri(
                         fontSize: 100,
-                        color: AppColors.backgroundDark,
+                        color: context.backgroundColor,
                       ),
                     ),
                   ),
@@ -360,7 +361,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                                   'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم',
                                   style: GoogleFonts.amiri(
                                     fontSize: 28,
-                                    color: AppColors.backgroundDark,
+                                    color: context.backgroundColor,
                                   ),
                                 ),
                               )

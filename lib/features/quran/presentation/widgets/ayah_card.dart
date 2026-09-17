@@ -6,6 +6,7 @@ import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/core/widgets/glass_card.dart';
 import 'package:adhan_reminder/features/settings/presentation/providers/settings_provider.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class AyahCard extends StatelessWidget {
   final Ayah ayah;
@@ -55,7 +56,7 @@ class AyahCard extends StatelessWidget {
                     IconButton(
                       icon: Icon(
                         bookmarkedAyah == ayah.nomorAyat ? Icons.bookmark : Icons.bookmark_add_outlined,
-                        color: bookmarkedAyah == ayah.nomorAyat ? Colors.amber : AppColors.backgroundDark
+                        color: bookmarkedAyah == ayah.nomorAyat ? Colors.amber : context.backgroundColor
                       ),
                       onPressed: () => onSaveBookmark(ayah),
                       tooltip: 'Tandai terakhir dibaca',
@@ -95,7 +96,7 @@ class AyahCard extends StatelessWidget {
               ayah.teksArab,
               textAlign: TextAlign.right,
               style: GoogleFonts.amiri(
-                color: AppColors.backgroundDark,
+                color: context.backgroundColor,
                 fontSize: settings.arabicFontSize,
                 height: 2.2,
               ),
@@ -114,7 +115,7 @@ class AyahCard extends StatelessWidget {
             Text(
               ayah.teksIndonesia,
               style: TextStyle(
-                color: AppColors.textPrimaryLight,
+                color: context.textPrimaryColor,
                 fontSize: settings.latinFontSize,
                 height: 1.5,
               ),

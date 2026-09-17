@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:adhan_reminder/core/widgets/glass_card.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class NextAdhanHeader extends StatelessWidget {
   final String timeString;
@@ -43,12 +44,12 @@ class NextAdhanHeader extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.volume_up_rounded, color: AppColors.backgroundDark, size: 28),
+                      icon: Icon(Icons.volume_up_rounded, color: context.backgroundColor, size: 28),
                       tooltip: 'Pengaturan Volume Global',
                       onPressed: onSettingsPressed,
                     ).animate().fade(delay: 200.ms).scale(),
                     IconButton(
-                      icon: const Icon(Icons.settings, color: AppColors.backgroundDark, size: 28),
+                      icon: Icon(Icons.settings, color: context.backgroundColor, size: 28),
                       tooltip: 'Pengaturan Aplikasi',
                       onPressed: () {
                         context.push('/settings');
@@ -63,14 +64,14 @@ class NextAdhanHeader extends StatelessWidget {
           Text(
             timeString,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: AppColors.backgroundDark,
+            style: TextStyle(
+              color: context.backgroundColor,
               fontSize: 60,
               fontWeight: FontWeight.w900,
               letterSpacing: 2,
             ),
           ).animate(onPlay: (controller) => controller.repeat())
-           .shimmer(duration: 3000.ms, color: AppColors.textSecondaryLight),
+           .shimmer(duration: 3000.ms, color: context.textSecondaryColor),
           const SizedBox(height: 5),
           Builder(
             builder: (context) {
@@ -82,8 +83,8 @@ class NextAdhanHeader extends StatelessWidget {
               return Text(
                 dateString,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.textSecondaryLight,
+                style: TextStyle(
+                  color: context.textSecondaryColor,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),

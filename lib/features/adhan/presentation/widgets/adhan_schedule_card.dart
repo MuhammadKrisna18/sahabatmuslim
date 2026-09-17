@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:adhan_reminder/features/adhan/domain/entities/adhan_schedule.dart';
 import 'package:adhan_reminder/core/widgets/glass_card.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class AdhanScheduleCard extends StatelessWidget {
   final AdhanSchedule schedule;
@@ -27,19 +28,19 @@ class AdhanScheduleCard extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? AppColors.textPrimaryLight : AppColors.backgroundDark,
+          backgroundColor: isDark ? context.textPrimaryColor : context.backgroundColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
             'Konfirmasi',
             style: TextStyle(
-              color: isDark ? AppColors.backgroundDark : AppColors.textPrimaryLight,
+              color: isDark ? context.backgroundColor : context.textPrimaryColor,
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
             'Apakah Anda yakin ingin ${willActivate ? "mengaktifkan" : "menonaktifkan"} adzan untuk ${schedule.id}?',
             style: TextStyle(
-              color: isDark ? AppColors.primary.withOpacity(0.3) : AppColors.textSecondaryLight,
+              color: isDark ? AppColors.primary.withOpacity(0.3) : context.textSecondaryColor,
             ),
           ),
           actions: [
@@ -50,7 +51,7 @@ class AdhanScheduleCard extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.backgroundDark,
+                foregroundColor: context.backgroundColor,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () => Navigator.of(context).pop(true),
@@ -80,12 +81,12 @@ class AdhanScheduleCard extends StatelessWidget {
                       ? AppColors.primary.withOpacity(0.3)
                       : (schedule.isActive
                           ? AppColors.primary.withOpacity(0.15)
-                          : AppColors.textSecondaryLight.withOpacity(0.1)),
+                          : context.textSecondaryColor.withOpacity(0.1)),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.mosque,
-                  color: schedule.isActive ? AppColors.textPrimaryLight : AppColors.textSecondaryLight,
+                  color: schedule.isActive ? context.textPrimaryColor : context.textSecondaryColor,
                   size: 28,
                 ),
               ).animate(target: isNext ? 1 : 0, onPlay: (controller) => controller.repeat(reverse: true))
@@ -101,7 +102,7 @@ class AdhanScheduleCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isNext ? AppColors.primary : (schedule.isActive ? AppColors.textPrimaryLight : AppColors.textSecondaryLight),
+                        color: isNext ? AppColors.primary : (schedule.isActive ? context.textPrimaryColor : context.textSecondaryColor),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -110,7 +111,7 @@ class AdhanScheduleCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: schedule.isActive ? AppColors.textPrimaryLight : AppColors.textSecondaryLight,
+                        color: schedule.isActive ? context.textPrimaryColor : context.textSecondaryColor,
                       ),
                     ),
                   ],
@@ -124,10 +125,10 @@ class AdhanScheduleCard extends StatelessWidget {
                     onToggle(schedule.id, val);
                   }
                 },
-                activeColor: AppColors.backgroundLight,
+                activeColor: context.backgroundColor,
                 activeTrackColor: AppColors.primary.withOpacity(0.8),
-                inactiveThumbColor: AppColors.textSecondaryLight,
-                inactiveTrackColor: AppColors.textSecondaryLight.withOpacity(0.3),
+                inactiveThumbColor: context.textSecondaryColor,
+                inactiveTrackColor: context.textSecondaryColor.withOpacity(0.3),
               ),
             ],
           ),

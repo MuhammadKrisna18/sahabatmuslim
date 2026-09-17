@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/core/widgets/glass_card.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class SurahCard extends StatelessWidget {
   final Surah surah;
@@ -70,7 +71,7 @@ class SurahCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,11 +80,11 @@ class SurahCard extends StatelessWidget {
                       tag: 'surah_latin_${surah.nomor}',
                       child: Material(
                         color: Colors.transparent,
-                        child: Text(surah.namaLatin, style: const TextStyle(color: AppColors.backgroundDark, fontWeight: FontWeight.bold, fontSize: 16)),
+                        child: Text(surah.namaLatin, style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text('${surah.tempatTurun} • ${surah.jumlahAyat} Ayat', style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12)),
+                    SizedBox(height: 4),
+                    Text('${surah.tempatTurun} • ${surah.jumlahAyat} Ayat', style: TextStyle(color: context.textSecondaryColor, fontSize: 12)),
                   ],
                 ),
               ),
@@ -91,7 +92,7 @@ class SurahCard extends StatelessWidget {
                 tag: 'surah_arab_${surah.nomor}',
                 child: Material(
                   color: Colors.transparent,
-                  child: Text(surah.nama, style: GoogleFonts.amiri(color: AppColors.backgroundDark, fontSize: 22, fontWeight: FontWeight.bold)),
+                  child: Text(surah.nama, style: GoogleFonts.amiri(color: context.backgroundColor, fontSize: 22, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

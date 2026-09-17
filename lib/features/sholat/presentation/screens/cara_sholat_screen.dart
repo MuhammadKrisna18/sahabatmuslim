@@ -13,6 +13,7 @@ import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:expandable/expandable.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class CaraSholatScreen extends StatelessWidget {
   const CaraSholatScreen({super.key});
@@ -28,11 +29,11 @@ class CaraSholatScreen extends StatelessWidget {
       appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              iconTheme: const IconThemeData(color: AppColors.backgroundDark),
+              iconTheme: IconThemeData(color: context.backgroundColor),
               title: Text(
                 'Panduan Sholat',
                 style: GoogleFonts.poppins(
-            color: AppColors.backgroundDark,
+            color: context.backgroundColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -40,7 +41,7 @@ class CaraSholatScreen extends StatelessWidget {
               centerTitle: false,
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.text_format, color: AppColors.backgroundDark),
+                  icon: Icon(Icons.text_format, color: context.backgroundColor),
                   tooltip: 'Pengaturan Teks',
                   onPressed: () => TypographySettingsSheet.show(context),
                 ),
@@ -60,8 +61,8 @@ class CaraSholatScreen extends StatelessWidget {
                       itemCount: 5,
                       itemBuilder: (context, index) {
                         return Shimmer.fromColors(
-                          baseColor: AppColors.backgroundDark.withOpacity(0.1),
-                          highlightColor: AppColors.backgroundDark.withOpacity(0.3),
+                          baseColor: context.backgroundColor.withOpacity(0.1),
+                          highlightColor: context.backgroundColor.withOpacity(0.3),
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 16),
                             height: 100,
@@ -75,7 +76,7 @@ class CaraSholatScreen extends StatelessWidget {
                     );
                   }
                   if (snapshot.hasError) {
-                    return const Center(child: Text('Gagal memuat panduan sholat', style: TextStyle(color: AppColors.backgroundDark)));
+                    return Center(child: Text('Gagal memuat panduan sholat', style: TextStyle(color: context.backgroundColor)));
                   }
 
                   final steps = snapshot.data ?? [];
@@ -142,7 +143,7 @@ class CaraSholatScreen extends StatelessWidget {
                                     Text(
                                       step['desc']!,
                                     style: TextStyle(
-                                      color: AppColors.textPrimaryLight,
+                                      color: context.textPrimaryColor,
                                       fontSize: 15,
                                       height: 1.5,
                                     ),
@@ -165,7 +166,7 @@ class CaraSholatScreen extends StatelessWidget {
                                             textAlign: TextAlign.right,
                                             style: GoogleFonts.amiri(
                                               fontSize: settings.arabicFontSize,
-                                              color: AppColors.backgroundDark,
+                                              color: context.backgroundColor,
                                               height: 2.0,
                                             ),
                                           ),
@@ -175,7 +176,7 @@ class CaraSholatScreen extends StatelessWidget {
                                             style: TextStyle(
                                               fontSize: settings.latinFontSize,
                                               fontStyle: FontStyle.italic,
-                                              color: AppColors.textPrimaryLight,
+                                              color: context.textPrimaryColor,
                                               height: 1.5,
                                             ),
                                           ),
@@ -184,7 +185,7 @@ class CaraSholatScreen extends StatelessWidget {
                                             step['arti']!,
                                             style: TextStyle(
                                               fontSize: settings.latinFontSize,
-                                              color: AppColors.textSecondaryLight,
+                                              color: context.textSecondaryColor,
                                               height: 1.5,
                                             ),
                                           ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_audio_provider.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class SurahAudioPlayerBottomBar extends StatelessWidget {
   final QuranAudioProvider quranAudio;
@@ -34,7 +35,7 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.backgroundDark.withOpacity(0.1),
+            color: context.backgroundColor.withOpacity(0.1),
             border: Border(top: BorderSide(color: AppColors.primary.withOpacity(0.1), width: 1.5)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -74,14 +75,14 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.skip_next, color: AppColors.primary),
+                      icon: Icon(Icons.skip_next, color: AppColors.primary),
                       onPressed: () => quranAudio.seek(quranAudio.duration),
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    Text(_formatDuration(quranAudio.position), style: const TextStyle(color: AppColors.backgroundDark, fontSize: 12, fontWeight: FontWeight.w500)),
+                    Text(_formatDuration(quranAudio.position), style: TextStyle(color: context.backgroundColor, fontSize: 12, fontWeight: FontWeight.w500)),
                     Expanded(
                       child: SliderTheme(
                         data: SliderTheme.of(context).copyWith(
@@ -89,13 +90,13 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                           overlayShape: const RoundSliderOverlayShape(overlayRadius: 10.0),
                           trackHeight: 1.5,
                           activeTrackColor: AppColors.primary.withOpacity(0.8),
-                          thumbColor: AppColors.backgroundDark,
+                          thumbColor: context.backgroundColor,
                         ),
                         child: Slider(
                           value: quranAudio.position.inMilliseconds.toDouble().clamp(0.0, quranAudio.duration.inMilliseconds > 0 ? quranAudio.duration.inMilliseconds.toDouble() : 1.0),
                           min: 0.0,
                           max: quranAudio.duration.inMilliseconds > 0 ? quranAudio.duration.inMilliseconds.toDouble() : 1.0,
-                          activeColor: AppColors.backgroundDark,
+                          activeColor: context.backgroundColor,
                           inactiveColor: AppColors.primary.withOpacity(0.1),
                           onChanged: (value) {
                             quranAudio.seek(Duration(milliseconds: value.toInt()));
@@ -103,7 +104,7 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(_formatDuration(quranAudio.duration), style: const TextStyle(color: AppColors.backgroundDark, fontSize: 12, fontWeight: FontWeight.w500)),
+                    Text(_formatDuration(quranAudio.duration), style: TextStyle(color: context.backgroundColor, fontSize: 12, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ],

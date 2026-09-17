@@ -10,6 +10,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class AddScheduleScreen extends StatefulWidget {
   final AdhanSchedule existingSchedule;
@@ -197,19 +198,19 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: AppColors.backgroundDark,
+          backgroundColor: context.backgroundColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text(
+          title: Text(
             'Konfirmasi Perubahan',
             style: TextStyle(
-              color: AppColors.textPrimaryLight,
+              color: context.textPrimaryColor,
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: const Text(
+          content: Text(
             'Apakah Anda yakin ingin menyimpan pengaturan adzan ini?',
             style: TextStyle(
-              color: AppColors.textSecondaryLight,
+              color: context.textSecondaryColor,
             ),
           ),
           actions: [
@@ -220,7 +221,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.backgroundDark,
+                foregroundColor: context.backgroundColor,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () => context.pop(true),
@@ -240,13 +241,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundDark,
+        backgroundColor: context.backgroundColor,
         title: Text(
           'Pengaturan ${widget.existingSchedule.id}',
           style: GoogleFonts.amiri(
-            color: AppColors.textPrimaryLight,
+            color: context.textPrimaryColor,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
           ),
@@ -269,7 +270,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: AppColors.backgroundDark,
+                color: context.backgroundColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1),
                 boxShadow: [
@@ -278,19 +279,19 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                leading: const Icon(Icons.access_time_filled, size: 40, color: AppColors.primary),
+                leading: Icon(Icons.access_time_filled, size: 40, color: AppColors.primary),
                 title: Text(
                   'Waktu Adzan ${widget.existingSchedule.id}',
-                  style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 16),
+                  style: TextStyle(color: context.textSecondaryColor, fontSize: 16),
                 ),
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     _selectedTime!.format(context),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
-                      color: AppColors.textPrimaryLight,
+                      color: context.textPrimaryColor,
                       letterSpacing: 2,
                     ),
                   ),
@@ -320,11 +321,11 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
-                        dropdownColor: AppColors.backgroundDark,
+                        dropdownColor: context.backgroundColor,
                         value: _selectedSoundName,
-                        hint: const Text('Pilih Suara', style: TextStyle(color: Color(0xFF94A3B8))),
-                        icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondaryLight),
-                        style: const TextStyle(color: AppColors.textPrimaryLight, fontSize: 16),
+                        hint: Text('Pilih Suara', style: TextStyle(color: Color(0xFF94A3B8))),
+                        icon: Icon(Icons.arrow_drop_down, color: context.textSecondaryColor),
+                        style: TextStyle(color: context.textPrimaryColor, fontSize: 16),
                         isExpanded: true,
                         items: _availableSounds.map((sound) {
                           return DropdownMenuItem(
@@ -391,14 +392,14 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    SizedBox(height: 15),
                     if (_customSoundPath != null)
                       TextField(
                         controller: _customNameController,
-                        style: const TextStyle(color: AppColors.textPrimaryLight),
+                        style: TextStyle(color: context.textPrimaryColor),
                         decoration: InputDecoration(
                           labelText: 'Nama Suara (Bisa diubah)',
-                          labelStyle: const TextStyle(color: AppColors.textSecondaryLight),
+                          labelStyle: TextStyle(color: context.textSecondaryColor),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                             borderSide: BorderSide(color: AppColors.primary.withOpacity(0.1)),
@@ -421,7 +422,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.backgroundDark,
+                foregroundColor: context.backgroundColor,
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 elevation: 8,

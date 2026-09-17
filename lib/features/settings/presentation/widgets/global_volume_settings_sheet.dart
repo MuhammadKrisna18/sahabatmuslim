@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class GlobalVolumeSettingsSheet {
   static void show(BuildContext context, AdhanProvider provider) {
@@ -27,7 +28,7 @@ class GlobalVolumeSettingsSheet {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: context.backgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
@@ -48,12 +49,12 @@ class GlobalVolumeSettingsSheet {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'Pengaturan Volume',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimaryLight,
+                      color: context.textPrimaryColor,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -87,11 +88,11 @@ class GlobalVolumeSettingsSheet {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'Pengaturan ini akan diterapkan ke semua jadwal sholat yang aktif.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: AppColors.textSecondaryLight, fontSize: 13),
+                        color: context.textSecondaryColor, fontSize: 13),
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -121,7 +122,7 @@ class GlobalVolumeSettingsSheet {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
-                            foregroundColor: AppColors.backgroundLight,
+                            foregroundColor: context.backgroundColor,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),

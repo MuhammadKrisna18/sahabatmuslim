@@ -7,6 +7,7 @@ import 'package:adhan_reminder/features/quran/presentation/providers/quran_provi
 import 'package:adhan_reminder/features/quran/presentation/widgets/surah_card.dart';
 import 'package:adhan_reminder/features/quran/presentation/widgets/bookmark_card.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class QuranListScreen extends StatefulWidget {
   const QuranListScreen({super.key});
@@ -43,7 +44,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
 
         return DynamicScaffold(
           body: isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppColors.backgroundDark))
+              ? Center(child: CircularProgressIndicator(color: context.backgroundColor))
               : RefreshIndicator(
                   onRefresh: () => quranProvider.loadSurahs(),
                   color: AppColors.primary,
@@ -58,7 +59,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         title: Text(
                           'Al-Qur\'an',
                           style: GoogleFonts.poppins(
-                            color: AppColors.backgroundDark,
+                            color: context.backgroundColor,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
@@ -66,7 +67,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         centerTitle: false,
                         actions: [
                           IconButton(
-                            icon: const Icon(Icons.download_done, color: AppColors.backgroundDark),
+                            icon: Icon(Icons.download_done, color: context.backgroundColor),
                             tooltip: 'Unduhan Audio',
                             onPressed: () {
                               context.push('/downloaded-audio');
@@ -87,18 +88,18 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                           child: TextField(
                             controller: _searchController,
-                            style: const TextStyle(color: AppColors.backgroundDark),
+                            style: TextStyle(color: context.backgroundColor),
                             onChanged: quranProvider.updateSearchQuery,
                             decoration: InputDecoration(
                               hintText: 'Cari surah (contoh: Al-Fatihah)',
-                              hintStyle: const TextStyle(color: AppColors.textSecondaryLight),
-                              prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                              hintStyle: TextStyle(color: context.textSecondaryColor),
+                              prefixIcon: Icon(Icons.search, color: AppColors.primary),
                               suffixIcon: quranProvider.searchQuery.isNotEmpty
                                   ? IconButton(
-                                      icon: const Icon(Icons.clear, color: AppColors.textSecondaryLight),
+                                      icon: Icon(Icons.clear, color: context.textSecondaryColor),
                                       onPressed: () {
                                         _searchController.clear();
                                         quranProvider.updateSearchQuery('');
@@ -130,11 +131,11 @@ class _QuranListScreenState extends State<QuranListScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.error_outline, color: AppColors.textSecondaryLight, size: 48),
-                              const SizedBox(height: 16),
-                              Text(error, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.backgroundDark, fontWeight: FontWeight.bold, fontSize: 16)),
-                              const SizedBox(height: 8),
-                              const Text('Pastikan koneksi internet Anda aktif.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 13)),
+                              Icon(Icons.error_outline, color: context.textSecondaryColor, size: 48),
+                              SizedBox(height: 16),
+                              Text(error, textAlign: TextAlign.center, style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                              SizedBox(height: 8),
+                              Text('Pastikan koneksi internet Anda aktif.', textAlign: TextAlign.center, style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
                               const SizedBox(height: 16),
                               ElevatedButton.icon(
                                 onPressed: () => quranProvider.loadSurahs(),
@@ -142,17 +143,17 @@ class _QuranListScreenState extends State<QuranListScreen> {
                                 label: const Text('Coba Lagi'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary.withOpacity(0.3),
-                                  foregroundColor: AppColors.backgroundDark,
+                                  foregroundColor: context.backgroundColor,
                                 ),
                               ),
                             ],
                           ),
                         )
                       else if (filteredSurahList.isEmpty)
-                        const SliverFillRemaining(
+                        SliverFillRemaining(
                           hasScrollBody: false,
                           child: Center(
-                            child: Text('Surah tidak ditemukan.', style: TextStyle(color: AppColors.backgroundDark)),
+                            child: Text('Surah tidak ditemukan.', style: TextStyle(color: context.backgroundColor)),
                           ),
                         )
                       else
