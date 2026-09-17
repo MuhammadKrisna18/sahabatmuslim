@@ -12,6 +12,7 @@ class AudioPlayerService {
   final AudioPlayer audioPlayer = AudioPlayer(userAgent: 'Mozilla/5.0 (Linux; Android 10; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.162 Mobile Safari/537.36');
   Uri? _artUriCache;
   QuranAudioHandler? audioHandler;
+  VoidCallback? onSkipToPrevious;
   
   final ValueNotifier<LoopModeState> customLoopModeNotifier = ValueNotifier(LoopModeState.sequential);
 

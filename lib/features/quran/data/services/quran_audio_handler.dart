@@ -68,6 +68,8 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
         MediaAction.seekBackward,
         MediaAction.playPause,
         MediaAction.setRepeatMode,
+        MediaAction.skipToNext,
+        MediaAction.skipToPrevious,
       },
       androidCompactActionIndices: const [1, 2, 3],
       processingState: processingState,
@@ -91,10 +93,22 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> stop() => _player.stop();
 
   @override
-  Future<void> skipToNext() => _player.seekToNext();
+  Future<void> skipToNext() async {
+    if (_player.hasNext) {
+      await _player.seekToNext();
+    } else {
+      await _player.seek(_player.duration ?? Duration.zero);
+    }
+  }
 
   @override
-  Future<void> skipToPrevious() => _player.seekToPrevious();
+  Future<void> skipToPrevious() async {
+    if (_player.hasPrevious) {
+      await _player.seekToPrevious();
+    } else {
+      await _player.seek(Duration.zero);
+    }
+  }
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {

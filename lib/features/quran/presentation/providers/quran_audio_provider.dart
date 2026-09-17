@@ -45,6 +45,29 @@ class QuranAudioProvider with ChangeNotifier {
         _quranProvider = quranProvider,
         _playlistManager = playlistManager {
     _initListeners();
+    _audioPlayerService.onSkipToPrevious = _handleSkipToPrevious;
+  }
+
+  void _handleSkipToPrevious() {
+    if (_currentSurah == null) return;
+    
+    // Jika durasi sudah lewat 3 detik, rewind ke awal surah
+    if (_position.inSeconds > 3) {
+      _audioPlayerService.seek(Duration.zero);
+      return;
+    }
+
+    final surahList = _quranProvider.surahList;
+    if (surahList.isEmpty) return;
+
+    int prevIndex = surahList.indexWhere((s) => s.nomor == _currentSurah!.nomor) - 1;
+    if (prevIndex >= 0) {
+      final prevSurah = surahList[prevIndex];
+      final prevAyahs = _quranProvider.getAyahs(prevSurah.nomor);
+      toggleAudio(prevSurah, ayahs: prevAyahs);
+    } else {
+      _audioPlayerService.seek(Duration.zero);
+    }
   }
 
   void _initListeners() {
