@@ -197,7 +197,7 @@ class QuranAudioProvider with ChangeNotifier {
 
         // Menonaktifkan mode per-ayat untuk Qori 05 (Mishary Rashid) sesuai permintaan, 
         // sehingga semua (05, 07, 09) memutar full surah.
-        bool canPlayAyah = false;
+        bool canPlayAyah = ayahs != null && ayahs.isNotEmpty && int.parse(_selectedQoriId) <= 6 && _selectedQoriId != '05';
         
         // Jika tidak mendukung per-ayat, putar full surah
         if (!canPlayAyah) {
