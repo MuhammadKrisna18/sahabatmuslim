@@ -113,18 +113,19 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                     Expanded(
                       child: SliderTheme(
                         data: SliderTheme.of(context).copyWith(
-                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0, elevation: 4.0, pressedElevation: 8.0),
-                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 10.0),
-                          trackHeight: 1.5,
-                          activeTrackColor: AppColors.primary.withOpacity(0.8),
-                          thumbColor: context.backgroundColor,
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0, elevation: 4.0, pressedElevation: 8.0),
+                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
+                          trackHeight: 3.0,
+                          activeTrackColor: AppColors.primary,
+                          inactiveTrackColor: AppColors.primary.withOpacity(0.2),
+                          thumbColor: AppColors.primary,
                         ),
                         child: Slider(
                           value: quranAudio.position.inMilliseconds.toDouble().clamp(0.0, quranAudio.duration.inMilliseconds > 0 ? quranAudio.duration.inMilliseconds.toDouble() : 1.0),
                           min: 0.0,
                           max: quranAudio.duration.inMilliseconds > 0 ? quranAudio.duration.inMilliseconds.toDouble() : 1.0,
-                          activeColor: context.backgroundColor,
-                          inactiveColor: AppColors.primary.withOpacity(0.1),
+                          activeColor: AppColors.primary,
+                          inactiveColor: AppColors.primary.withOpacity(0.2),
                           onChanged: (value) {
                             quranAudio.seek(Duration(milliseconds: value.toInt()));
                           },

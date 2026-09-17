@@ -27,7 +27,7 @@ class QuranDownloadRepositoryImpl implements QuranDownloadRepository {
         final items = decoded.map((e) => DownloadItemModel.fromJson(e).toEntity()).toList();
         return Right(items);
       }
-      return const Right([]);
+      return Right([]);
     } catch (e) {
       return Left(CacheFailure('Gagal memuat data unduhan: $e'));
     }

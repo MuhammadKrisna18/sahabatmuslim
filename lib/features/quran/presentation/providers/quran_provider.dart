@@ -111,6 +111,19 @@ class QuranProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> saveSurahBookmark(Surah surah) async {
+    final bookmark = Bookmark(
+      surahNomor: surah.nomor,
+      surahNama: surah.namaLatin,
+      ayahNomor: 1,
+    );
+    await _saveBookmarkUseCase.execute(bookmark);
+    _bookmarkedSurahNomor = surah.nomor;
+    _bookmarkedSurahNama = surah.namaLatin;
+    _bookmarkedAyahNomor = 1;
+    notifyListeners();
+  }
+
   Future<void> loadSurahs() async {
     if (_surahList.isNotEmpty) return;
 
