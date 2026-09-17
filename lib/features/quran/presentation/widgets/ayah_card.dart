@@ -91,35 +91,41 @@ class AyahCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              ayah.teksArab,
-              textAlign: TextAlign.right,
-              style: GoogleFonts.amiri(
-                color: context.textPrimaryColor,
-                fontSize: settings.arabicFontSize,
-                height: 2.2,
+            if (settings.showArabic) ...[
+              const SizedBox(height: 16),
+              Text(
+                ayah.teksArab,
+                textAlign: TextAlign.right,
+                style: GoogleFonts.amiri(
+                  color: context.textPrimaryColor,
+                  fontSize: settings.arabicFontSize,
+                  height: 2.2,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              ayah.teksLatin,
-              style: TextStyle(
-                color: AppColors.primary,
-                fontStyle: FontStyle.italic,
-                fontSize: settings.latinFontSize,
-                height: 1.5,
+            ],
+            if (settings.showLatin) ...[
+              const SizedBox(height: 16),
+              Text(
+                ayah.teksLatinSanitized,
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontStyle: FontStyle.italic,
+                  fontSize: settings.latinFontSize,
+                  height: 1.5,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              ayah.teksIndonesia,
-              style: TextStyle(
-                color: context.textPrimaryColor,
-                fontSize: settings.latinFontSize,
-                height: 1.5,
+            ],
+            if (settings.showTranslation) ...[
+              const SizedBox(height: 12),
+              Text(
+                ayah.teksIndonesia,
+                style: TextStyle(
+                  color: context.textPrimaryColor,
+                  fontSize: settings.latinFontSize,
+                  height: 1.5,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

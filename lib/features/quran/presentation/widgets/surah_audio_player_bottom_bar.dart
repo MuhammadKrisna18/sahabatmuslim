@@ -1,9 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_audio_provider.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
 import 'package:adhan_reminder/core/theme/theme_ext.dart';
+import 'package:adhan_reminder/features/quran/data/services/audio_player_service.dart';
 
 class SurahAudioPlayerBottomBar extends StatelessWidget {
   final QuranAudioProvider quranAudio;
@@ -77,6 +79,31 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.skip_next, color: AppColors.primary),
                       onPressed: () => quranAudio.seek(quranAudio.duration),
+                    ),
+                    IconButton(
+                      icon: Builder(
+                        builder: (context) {
+                          IconData iconData;
+                          Color iconColor = AppColors.primary;
+                          switch (quranAudio.loopModeState) {
+                            case LoopModeState.playOnce:
+                              iconData = Icons.keyboard_tab;
+                              iconColor = AppColors.primary.withOpacity(0.5);
+                              break;
+                            case LoopModeState.sequential:
+                              iconData = Icons.repeat;
+                              break;
+                            case LoopModeState.repeatOne:
+                              iconData = Icons.repeat_one;
+                              break;
+                            case LoopModeState.shuffle:
+                              iconData = Icons.shuffle;
+                              break;
+                          }
+                          return Icon(iconData, color: iconColor);
+                        }
+                      ),
+                      onPressed: quranAudio.toggleLoopMode,
                     ),
                   ],
                 ),

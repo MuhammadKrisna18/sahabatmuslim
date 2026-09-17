@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+import 'package:audio_service/audio_service.dart';
 import 'dart:io';
+import 'dart:math';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
+import 'package:adhan_reminder/features/quran/domain/entities/ayah.dart';
 import 'package:adhan_reminder/core/di/injection.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_download_provider.dart';
+import 'package:adhan_reminder/features/quran/presentation/providers/quran_provider.dart';
 
 import 'package:adhan_reminder/features/quran/data/services/audio_player_service.dart';
 
 class QuranAudioProvider with ChangeNotifier {
+  LoopModeState get loopModeState => _audioPlayerService.customLoopModeNotifier.value;
+  
+  List<Ayah> _currentAyahs = [];
+
   final AudioPlayerService _audioPlayerService = getIt<AudioPlayerService>();
 
   Surah? _currentSurah;
@@ -26,14 +33,8 @@ class QuranAudioProvider with ChangeNotifier {
   }
 
   final Map<String, String> qoriNames = {
-    '01': 'Abdullah Al-Juhany',
-    '02': 'Abdul Muhsin Al-Qasim',
-    '03': 'Abdurrahman as-Sudais',
-    '04': 'Ibrahim Al-Dawsari',
     '05': 'Mishary Rashid Alafasy',
-    '06': 'Yasser Al-Dosari',
     '07': 'Saad Al Ghamdi',
-    '08': 'Islam Sobhi (Alternatif)',
     '09': 'Alaa Aqel',
   };
 
@@ -44,9 +45,10 @@ class QuranAudioProvider with ChangeNotifier {
   Duration get duration => _duration;
   Duration get position => _position;
   double get playbackRate => _playbackRate;
+  List<Ayah> get currentAyahs => _currentAyahs;
 
   QuranAudioProvider() {
-    _audioPlayerService.playerStateStream.listen((state) {
+    _audioPlayerService.playerStateStream.listen((state) async {
       _isPlaying = state.playing;
       if (state.processingState == ProcessingState.ready ||
           state.processingState == ProcessingState.completed ||
@@ -59,8 +61,9 @@ class QuranAudioProvider with ChangeNotifier {
       if (state.processingState == ProcessingState.completed) {
         _isPlaying = false;
         _position = Duration.zero;
-        _audioPlayerService.pause();
-        _audioPlayerService.seek(Duration.zero);
+        await _audioPlayerService.pause();
+        await _audioPlayerService.seek(Duration.zero);
+        await _handleSurahCompletion();
       }
       notifyListeners();
     });
@@ -76,14 +79,56 @@ class QuranAudioProvider with ChangeNotifier {
     });
 
     _audioPlayerService.currentIndexStream.listen((index) {
-      if (index != null && _allSurahs.isNotEmpty && index < _allSurahs.length) {
-        if (_currentSurah?.nomor != _allSurahs[index].nomor) {
-          _currentSurah = _allSurahs[index];
+      if (index != null) {
+        if (_currentAyahs.isNotEmpty && index < _currentAyahs.length) {
+          _currentAyahIndex = index;
           notifyListeners();
+        } else if (_allSurahs.isNotEmpty && index < _allSurahs.length) {
+          if (_currentSurah?.nomor != _allSurahs[index].nomor) {
+            _currentSurah = _allSurahs[index];
+            notifyListeners();
+          }
         }
       }
     });
+
+    _audioPlayerService.customLoopModeNotifier.addListener(() {
+      notifyListeners();
+    });
   }
+
+  Future<void> _handleSurahCompletion() async {
+    final state = loopModeState;
+    if (state == LoopModeState.playOnce) {
+      return; // Already stopped
+    }
+    
+    final quranProvider = getIt<QuranProvider>();
+    final surahList = quranProvider.surahList;
+    if (surahList.isEmpty || _currentSurah == null) return;
+
+    if (state == LoopModeState.sequential) {
+      int nextIndex = surahList.indexWhere((s) => s.nomor == _currentSurah!.nomor) + 1;
+      if (nextIndex < surahList.length) {
+        final nextSurah = surahList[nextIndex];
+        final nextAyahs = quranProvider.getAyahs(nextSurah.nomor);
+        // Delay slightly to ensure UI is ready and avoid race conditions
+        Future.delayed(const Duration(milliseconds: 500), () {
+          toggleAudio(nextSurah, null, ayahs: nextAyahs);
+        });
+      }
+    } else if (state == LoopModeState.shuffle) {
+      int randomIndex = Random().nextInt(surahList.length);
+      final randomSurah = surahList[randomIndex];
+      final randomAyahs = quranProvider.getAyahs(randomSurah.nomor);
+      Future.delayed(const Duration(milliseconds: 500), () {
+        toggleAudio(randomSurah, null, ayahs: randomAyahs);
+      });
+    }
+  }
+
+  int _currentAyahIndex = -1;
+  int get currentAyahIndex => _currentAyahIndex;
 
   void setQori(String qoriId) {
     if (_selectedQoriId != qoriId) {
@@ -108,8 +153,6 @@ class QuranAudioProvider with ChangeNotifier {
       String? audioUrl;
       if (_selectedQoriId == '07') {
         audioUrl = 'https://server7.mp3quran.net/s_gmd/${s.nomor.toString().padLeft(3, '0')}.mp3';
-      } else if (_selectedQoriId == '08') {
-        audioUrl = 'https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/${s.nomor.toString().padLeft(3, '0')}.mp3';
       } else if (_selectedQoriId == '09') {
         audioUrl = 'https://archive.org/download/AlaaAql/${s.nomor.toString().padLeft(3, '0')}.mp3';
       } else {
@@ -157,9 +200,12 @@ class QuranAudioProvider with ChangeNotifier {
     _builtQoriId = _selectedQoriId;
   }
 
-  Future<void> toggleAudio(Surah surah, BuildContext context, {List<Surah>? allSurahs}) async {
+  Future<void> toggleAudio(Surah surah, BuildContext? context, {List<Surah>? allSurahs, List<Ayah>? ayahs}) async {
     if (allSurahs != null && allSurahs.isNotEmpty) {
       _allSurahs = allSurahs;
+    } else if (ayahs != null) {
+      _allSurahs = [];
+      _isPlaylistBuilt = false;
     }
 
     try {
@@ -188,87 +234,160 @@ class QuranAudioProvider with ChangeNotifier {
         if (_currentSurah?.nomor != surah.nomor) {
           await _audioPlayerService.stop();
           _currentSurah = surah;
+          if (ayahs != null) _currentAyahs = ayahs;
           notifyListeners();
-        }
-
-        String? audioUrl;
-        if (_selectedQoriId == '07') {
-          audioUrl = 'https://server7.mp3quran.net/s_gmd/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-        } else if (_selectedQoriId == '08') {
-          audioUrl = 'https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-        } else if (_selectedQoriId == '09') {
-          audioUrl = 'https://archive.org/download/AlaaAql/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-        } else {
-          audioUrl = surah.audioUrls[_selectedQoriId];
-          if (audioUrl == null && surah.audioUrls.isNotEmpty) {
-            audioUrl = surah.audioUrls.values.first;
-          }
-        }
-
-        if (audioUrl == null || audioUrl.isEmpty) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Audio tidak tersedia untuk surah ini.')),
-            );
-          }
-          return;
         }
 
         if (_isPlaying) {
           await _audioPlayerService.pause();
-        } else {
-          _isBuffering = true;
-          notifyListeners();
+          return;
+        }
 
-          final currentTag = _audioPlayerService.sequenceState?.currentSource?.tag as MediaItem?;
+        _isBuffering = true;
+        notifyListeners();
+
+        // Cek apakah mode Ayah tersedia (Qori 01-06 memiliki audioUrls per ayat)
+        bool canPlayAyah = ayahs != null && ayahs.isNotEmpty && int.parse(_selectedQoriId) <= 6;
+        final downloadProvider = getIt<QuranDownloadProvider>();
+        final localPath = downloadProvider.getLocalPath(surah.nomor, _selectedQoriId);
+        final bool isLocal = localPath != null && File(localPath).existsSync();
+
+        // Jika OFFLINE (sudah didownload) ATAU Qori > 05, paksa mode Full Surah
+        if (isLocal || !canPlayAyah) {
+          String? audioUrl;
+          if (_selectedQoriId == '07') {
+            audioUrl = 'https://server7.mp3quran.net/s_gmd/${surah.nomor.toString().padLeft(3, '0')}.mp3';
+          } else if (_selectedQoriId == '09') {
+            audioUrl = 'https://archive.org/download/AlaaAql/${surah.nomor.toString().padLeft(3, '0')}.mp3';
+          } else {
+            audioUrl = surah.audioUrls[_selectedQoriId] ?? (surah.audioUrls.isNotEmpty ? surah.audioUrls.values.first : null);
+          }
+
+          if (audioUrl == null || audioUrl.isEmpty) {
+            if (context != null && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Audio tidak tersedia untuk surah ini.')));
+            }
+            _isBuffering = false;
+            notifyListeners();
+            return;
+          }
+
           final expectedId = '${surah.nomor}-$_selectedQoriId-${DateTime.now().millisecondsSinceEpoch}';
-
-          final downloadProvider = getIt<QuranDownloadProvider>();
-          final localPath = downloadProvider.getLocalPath(surah.nomor, _selectedQoriId);
-          final bool isLocal = localPath != null && File(localPath).existsSync();
-
           final artUri = await _getArtUri();
 
-          if (currentTag?.id != expectedId) {
-            await _audioPlayerService.setAudioSource(
-              isLocal
-                  ? AudioSource.uri(
-                      Uri.file(localPath),
-                      tag: MediaItem(
-                        id: expectedId,
-                        album: 'Murottal SahabatMuslim',
-                        title: 'Surah ${surah.namaLatin} (Offline)',
-                        artist: qoriNames[_selectedQoriId] ?? "Qori",
-                        artUri: artUri,
-                      ),
-                    )
-                  : AudioSource.uri(
-                      Uri.parse(audioUrl),
-                      tag: MediaItem(
-                        id: expectedId,
-                        album: 'Murottal SahabatMuslim',
-                        title: 'Surah ${surah.namaLatin}',
-                        artist: qoriNames[_selectedQoriId] ?? "Qori",
-                        artUri: artUri,
-                      ),
+          await _audioPlayerService.setAudioSource(
+            isLocal
+                ? AudioSource.uri(
+                    Uri.file(localPath),
+                    tag: MediaItem(
+                      id: expectedId,
+                      album: 'Murottal SahabatMuslim',
+                      title: 'Surah ${surah.namaLatin} (Offline)',
+                      artist: qoriNames[_selectedQoriId] ?? "Qori",
+                      artUri: artUri,
                     ),
-            );
+                  )
+                : AudioSource.uri(
+                    Uri.parse(audioUrl),
+                    tag: MediaItem(
+                      id: expectedId,
+                      album: 'Murottal SahabatMuslim',
+                      title: 'Surah ${surah.namaLatin}',
+                      artist: qoriNames[_selectedQoriId] ?? "Qori",
+                      artUri: artUri,
+                    ),
+                  ),
+          );
+        } else {
+          // Play Per Ayat
+          List<AudioSource> children = [];
+          final artUri = await _getArtUri();
+          
+          for (var ayah in ayahs!) {
+            String? ayahAudioUrl = ayah.audioUrls[_selectedQoriId];
+            if (ayahAudioUrl != null) {
+              children.add(
+                AudioSource.uri(
+                  Uri.parse(ayahAudioUrl),
+                  tag: MediaItem(
+                    id: '${surah.nomor}-${ayah.nomorAyat}-$_selectedQoriId',
+                    album: 'Surah ${surah.namaLatin}',
+                    title: 'Ayat ${ayah.nomorAyat}',
+                    artist: qoriNames[_selectedQoriId] ?? "Qori",
+                    artUri: artUri,
+                  ),
+                )
+              );
+            }
           }
-          await _audioPlayerService.play();
+          
+          if (children.isEmpty) {
+            if (context != null && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Audio ayat tidak tersedia.')));
+            }
+            _isBuffering = false;
+            notifyListeners();
+            return;
+          }
+
+          await _audioPlayerService.setAudioSource(ConcatenatingAudioSource(children: children));
+          
+          // Apply current native loop mode based on custom state
+          final state = loopModeState;
+          if (state == LoopModeState.repeatOne) {
+            await _audioPlayerService.setShuffleModeEnabled(false);
+            await _audioPlayerService.setLoopMode(LoopMode.all);
+          } else {
+            // For playOnce, sequential, and shuffle, native loop mode is off
+            await _audioPlayerService.setShuffleModeEnabled(false);
+            await _audioPlayerService.setLoopMode(LoopMode.off);
+          }
+
+          if (!_isPlaying) {
+            await _audioPlayerService.play();
+          }
+        }
+      } // Closes else block from line 236
+    } catch (e) {
+        debugPrint('Error playing audio: $e');
+        _isBuffering = false;
+        _isPlaying = false;
+        notifyListeners();
+        if (context != null && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Koneksi internet terputus atau audio gagal dimuat.'),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
-    } catch (e) {
-      _isBuffering = false;
-      notifyListeners();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Koneksi internet terputus. Audio membutuhkan internet.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     }
+
+  Future<void> toggleLoopMode() async {
+    final currentState = loopModeState;
+    LoopModeState nextState;
+
+    switch (currentState) {
+      case LoopModeState.playOnce:
+        nextState = LoopModeState.sequential;
+        await _audioPlayerService.setLoopMode(LoopMode.off);
+        break;
+      case LoopModeState.sequential:
+        nextState = LoopModeState.repeatOne;
+        await _audioPlayerService.setLoopMode(LoopMode.all); // Loop current surah natively
+        break;
+      case LoopModeState.repeatOne:
+        nextState = LoopModeState.shuffle;
+        await _audioPlayerService.setLoopMode(LoopMode.off); // Let custom logic handle next surah
+        break;
+      case LoopModeState.shuffle:
+        nextState = LoopModeState.playOnce;
+        await _audioPlayerService.setLoopMode(LoopMode.off);
+        break;
+    }
+    
+    _audioPlayerService.customLoopModeNotifier.value = nextState;
   }
 
   Future<void> pauseAudio() async {
@@ -305,8 +424,6 @@ class QuranAudioProvider with ChangeNotifier {
   String? getAudioUrl(Surah surah, String qoriId) {
     if (qoriId == '07') {
       return 'https://server7.mp3quran.net/s_gmd/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-    } else if (qoriId == '08') {
-      return 'https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/${surah.nomor.toString().padLeft(3, '0')}.mp3';
     } else if (qoriId == '09') {
       return 'https://archive.org/download/AlaaAql/${surah.nomor.toString().padLeft(3, '0')}.mp3';
     } else {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
@@ -16,18 +15,14 @@ import 'package:adhan_reminder/core/theme/app_theme.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
 import 'package:adhan_reminder/core/constants/app_strings.dart';
 import 'package:adhan_reminder/core/routes/app_router.dart';
+import 'package:adhan_reminder/features/quran/data/services/audio_player_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await setupInjection();
 
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Pemutaran Audio',
-    androidNotificationOngoing: true,
-    preloadArtwork: true,
-  );
+  await getIt<AudioPlayerService>().initAudioService();
 
   await getIt<NotificationService>().initialize();
   await getIt<AlarmService>().initialize();

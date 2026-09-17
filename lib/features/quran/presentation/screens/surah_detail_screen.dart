@@ -102,7 +102,67 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
 
   void _toggleAudio() async {
     final quranAudio = context.read<QuranAudioProvider>();
-    await quranAudio.toggleAudio(widget.surah, context, allSurahs: widget.allSurahs);
+    final quranProvider = context.read<QuranProvider>();
+    final ayahs = quranProvider.getAyahs(widget.surah.nomor);
+    await quranAudio.toggleAudio(widget.surah, context, ayahs: ayahs);
+  }
+
+  void _showDisplayFilters() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.surfaceColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Consumer<SettingsProvider>(
+          builder: (context, settings, _) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.filter_list, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Tampilan Bacaan',
+                        style: TextStyle(
+                          color: context.textPrimaryColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  CheckboxListTile(
+                    title: const Text('Tampilkan Teks Arab'),
+                    value: settings.showArabic,
+                    onChanged: (val) => settings.setShowArabic(val ?? true),
+                    activeColor: AppColors.primary,
+                  ),
+                  CheckboxListTile(
+                    title: const Text('Tampilkan Teks Latin'),
+                    value: settings.showLatin,
+                    onChanged: (val) => settings.setShowLatin(val ?? true),
+                    activeColor: AppColors.primary,
+                  ),
+                  CheckboxListTile(
+                    title: const Text('Tampilkan Terjemahan'),
+                    value: settings.showTranslation,
+                    onChanged: (val) => settings.setShowTranslation(val ?? true),
+                    activeColor: AppColors.primary,
+                  ),
+                ],
+              ),
+            );
+          }
+        );
+      },
+    );
   }
 
   void _showQoriSelection() {
@@ -127,7 +187,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                 const SizedBox(height: 16),
                 ...quranAudio.qoriNames.keys.map((id) {
                   bool isAvailable = true;
-                  if (id != '07' && id != '09') {
+                  if (id != '07' && id != '08' && id != '09') {
                     isAvailable = widget.surah.audioUrls.containsKey(id);
                   }
 
@@ -278,6 +338,11 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                     },
                   );
                 },
+              ),
+              IconButton(
+                icon: const Icon(Icons.filter_list, color: AppColors.primary),
+                tooltip: 'Filter Tampilan',
+                onPressed: _showDisplayFilters,
               ),
               IconButton(
                 icon: Icon(Icons.text_format, color: context.textPrimaryColor),
