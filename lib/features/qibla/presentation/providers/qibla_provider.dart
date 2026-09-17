@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:adhan/adhan.dart';
-import 'package:adhan_reminder/core/utils/location_helper.dart';
+import 'package:adhan_reminder/features/qibla/domain/usecases/get_qibla_direction_usecase.dart';
 
 class QiblaProvider with ChangeNotifier {
+  final GetQiblaDirectionUseCase _getQiblaDirectionUseCase;
+
   double? _qiblaDirection;
   double? get qiblaDirection => _qiblaDirection;
 
@@ -16,7 +16,8 @@ class QiblaProvider with ChangeNotifier {
   bool _isLoading = true;
   bool get isLoading => _isLoading;
 
-  QiblaProvider() {
+  QiblaProvider({required GetQiblaDirectionUseCase getQiblaDirectionUseCase})
+      : _getQiblaDirectionUseCase = getQiblaDirectionUseCase {
     fetchQiblaDirection();
   }
 
@@ -24,25 +25,21 @@ class QiblaProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    try {
-      Position position = await LocationHelper.getCurrentPosition();
+    final result = await _getQiblaDirectionUseCase.execute();
 
-      _errorMessage = '';
-      _hasPermissions = true;
+    result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        _hasPermissions = false;
+      },
+      (direction) {
+        _qiblaDirection = direction;
+        _errorMessage = '';
+        _hasPermissions = true;
+      },
+    );
 
-      final coordinates = Coordinates(position.latitude, position.longitude);
-      final qibla = Qibla(coordinates);
-      
-      _qiblaDirection = qibla.direction;
-    } on LocationException catch (e) {
-      _errorMessage = e.message;
-      _hasPermissions = false;
-    } catch (e) {
-      _errorMessage = 'Gagal mendapatkan lokasi. Pastikan GPS aktif dan coba lagi.';
-      _hasPermissions = false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    _isLoading = false;
+    notifyListeners();
   }
 }

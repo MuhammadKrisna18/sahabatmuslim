@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:adhan_reminder/core/widgets/glass_card.dart';
 import 'package:adhan_reminder/features/settings/presentation/widgets/typography_settings_sheet.dart';
 import 'package:adhan_reminder/features/settings/presentation/providers/settings_provider.dart';
+import 'package:adhan_reminder/features/doa/presentation/providers/doa_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:shimmer/shimmer.dart';
@@ -13,12 +12,20 @@ import 'package:expandable/expandable.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
 import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
-class DoaListScreen extends StatelessWidget {
+class DoaListScreen extends StatefulWidget {
   const DoaListScreen({super.key});
 
-  Future<List<dynamic>> _loadDoaData() async {
-    final String response = await rootBundle.loadString('assets/data/doa_list.json');
-    return json.decode(response);
+  @override
+  State<DoaListScreen> createState() => _DoaListScreenState();
+}
+
+class _DoaListScreenState extends State<DoaListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DoaProvider>().loadDoaList();
+    });
   }
 
   @override
@@ -47,13 +54,12 @@ class DoaListScreen extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Future.delayed(const Duration(seconds: 1));
+          await context.read<DoaProvider>().loadDoaList();
         },
         color: AppColors.primary,
-        child: FutureBuilder<List<dynamic>>(
-          future: _loadDoaData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+        child: Consumer<DoaProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading && provider.doaList.isEmpty) {
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: 8,
@@ -73,14 +79,24 @@ class DoaListScreen extends StatelessWidget {
                 },
               );
             }
-            if (snapshot.hasError) {
-              return Center(child: Text('Gagal memuat doa', style: TextStyle(color: context.textPrimaryColor)));
+
+            if (provider.errorMessage != null && provider.doaList.isEmpty) {
+              return Center(
+                child: Text(
+                  provider.errorMessage ?? 'Gagal memuat doa',
+                  style: TextStyle(color: context.textPrimaryColor),
+                ),
+              );
             }
 
-            final doaList = snapshot.data ?? [];
+            final doaList = provider.doaList;
             return ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: MediaQuery.of(context).padding.bottom + 130),
+              padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                  bottom: MediaQuery.of(context).padding.bottom + 130),
               itemCount: doaList.length,
               itemBuilder: (context, index) {
                 final doa = doaList[index];
@@ -98,7 +114,7 @@ class DoaListScreen extends StatelessWidget {
                         header: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            doa['title']!,
+                            doa.title,
                             style: const TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -108,18 +124,20 @@ class DoaListScreen extends StatelessWidget {
                         ),
                         collapsed: const SizedBox.shrink(),
                         expanded: Container(
-                          margin: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                          margin: const EdgeInsets.only(
+                              left: 16.0, right: 16.0, bottom: 16.0),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+                            border: Border.all(
+                                color: AppColors.primary.withOpacity(0.1)),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                doa['arab']!,
+                                doa.arab,
                                 textAlign: TextAlign.right,
                                 style: GoogleFonts.amiri(
                                   color: context.textPrimaryColor,
@@ -129,7 +147,7 @@ class DoaListScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                doa['latin']!,
+                                doa.latin,
                                 style: TextStyle(
                                   color: context.textPrimaryColor,
                                   fontStyle: FontStyle.italic,
@@ -139,7 +157,7 @@ class DoaListScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                "Arti:\n${doa['arti']}",
+                                "Arti:\n${doa.arti}",
                                 style: TextStyle(
                                   color: context.textSecondaryColor,
                                   fontSize: settings.latinFontSize,
@@ -155,7 +173,7 @@ class DoaListScreen extends StatelessWidget {
                 );
               },
             );
-          }
+          },
         ),
       ),
     );

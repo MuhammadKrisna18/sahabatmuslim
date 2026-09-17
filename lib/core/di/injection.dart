@@ -7,6 +7,25 @@ import 'package:adhan_reminder/features/quran/domain/repositories/quran_reposito
 import 'package:adhan_reminder/features/quran/domain/usecases/get_surahs_usecase.dart';
 import 'package:adhan_reminder/features/quran/domain/usecases/get_surah_detail_usecase.dart';
 
+import 'package:adhan_reminder/features/doa/data/repositories/doa_repository_impl.dart';
+import 'package:adhan_reminder/features/doa/domain/repositories/doa_repository.dart';
+import 'package:adhan_reminder/features/doa/domain/usecases/get_doa_list_usecase.dart';
+import 'package:adhan_reminder/features/doa/presentation/providers/doa_provider.dart';
+
+import 'package:adhan_reminder/features/sholat/data/repositories/sholat_repository_impl.dart';
+import 'package:adhan_reminder/features/sholat/domain/repositories/sholat_repository.dart';
+import 'package:adhan_reminder/features/sholat/domain/usecases/get_cara_sholat_usecase.dart';
+import 'package:adhan_reminder/features/sholat/presentation/providers/sholat_provider.dart';
+
+import 'package:adhan_reminder/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:adhan_reminder/features/settings/domain/repositories/settings_repository.dart';
+import 'package:adhan_reminder/features/settings/domain/usecases/get_settings_usecase.dart';
+import 'package:adhan_reminder/features/settings/domain/usecases/save_settings_usecase.dart';
+
+import 'package:adhan_reminder/features/qibla/data/repositories/qibla_repository_impl.dart';
+import 'package:adhan_reminder/features/qibla/domain/repositories/qibla_repository.dart';
+import 'package:adhan_reminder/features/qibla/domain/usecases/get_qibla_direction_usecase.dart';
+
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_download_provider.dart';
 
 
@@ -33,14 +52,20 @@ Future<void> setupInjection() async {
 
   getIt.registerLazySingleton<PrayerTimeRepository>(() => PrayerTimeRepositoryImpl());
   getIt.registerLazySingleton<QuranRepository>(() => QuranRepositoryImpl());
-
+  getIt.registerLazySingleton<DoaRepository>(() => DoaRepositoryImpl());
+  getIt.registerLazySingleton<SholatRepository>(() => SholatRepositoryImpl());
+  getIt.registerLazySingleton<QiblaRepository>(() => QiblaRepositoryImpl());
+  getIt.registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImpl(getIt<StorageService>()));
 
 
   getIt.registerLazySingleton<GetPrayerTimesUseCase>(() => GetPrayerTimesUseCase(getIt<PrayerTimeRepository>()));
   getIt.registerLazySingleton<GetSurahsUseCase>(() => GetSurahsUseCase(getIt<QuranRepository>()));
   getIt.registerLazySingleton<GetSurahDetailUseCase>(() => GetSurahDetailUseCase(getIt<QuranRepository>()));
-
-
+  getIt.registerLazySingleton<GetDoaListUseCase>(() => GetDoaListUseCase(getIt<DoaRepository>()));
+  getIt.registerLazySingleton<GetCaraSholatUseCase>(() => GetCaraSholatUseCase(getIt<SholatRepository>()));
+  getIt.registerLazySingleton<GetQiblaDirectionUseCase>(() => GetQiblaDirectionUseCase(getIt<QiblaRepository>()));
+  getIt.registerLazySingleton<GetSettingsUseCase>(() => GetSettingsUseCase(getIt<SettingsRepository>()));
+  getIt.registerLazySingleton<SaveSettingsUseCase>(() => SaveSettingsUseCase(getIt<SettingsRepository>()));
 
 
   getIt.registerLazySingleton<NotificationService>(() => NotificationService());
@@ -62,7 +87,19 @@ Future<void> setupInjection() async {
       ));
 
   getIt.registerLazySingleton<SettingsProvider>(() => SettingsProvider(
-    storageService: getIt<StorageService>(),
+    getSettingsUseCase: getIt<GetSettingsUseCase>(),
+    saveSettingsUseCase: getIt<SaveSettingsUseCase>(),
   ));
-  getIt.registerLazySingleton<QiblaProvider>(() => QiblaProvider());
+  
+  getIt.registerLazySingleton<QiblaProvider>(() => QiblaProvider(
+    getQiblaDirectionUseCase: getIt<GetQiblaDirectionUseCase>(),
+  ));
+
+  getIt.registerLazySingleton<DoaProvider>(() => DoaProvider(
+    getDoaListUseCase: getIt<GetDoaListUseCase>(),
+  ));
+
+  getIt.registerLazySingleton<SholatProvider>(() => SholatProvider(
+    getCaraSholatUseCase: getIt<GetCaraSholatUseCase>(),
+  ));
 }

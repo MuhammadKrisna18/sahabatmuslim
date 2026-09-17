@@ -1,83 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:adhan_reminder/core/services/storage_service.dart';
+import 'package:adhan_reminder/features/settings/domain/entities/app_settings.dart';
+import 'package:adhan_reminder/features/settings/domain/usecases/get_settings_usecase.dart';
+import 'package:adhan_reminder/features/settings/domain/usecases/save_settings_usecase.dart';
 
 class SettingsProvider with ChangeNotifier {
-  final StorageService _storage;
+  final GetSettingsUseCase _getSettingsUseCase;
+  final SaveSettingsUseCase _saveSettingsUseCase;
   
-  static const String _arabicFontSizeKey = 'arabic_font_size';
-  static const String _latinFontSizeKey = 'latin_font_size';
-  static const String _themeModeKey = 'theme_mode';
+  AppSettings _settings = AppSettings();
 
-  static const String _showArabicKey = 'show_arabic';
-  static const String _showLatinKey = 'show_latin';
-  static const String _showTranslationKey = 'show_translation';
+  double get arabicFontSize => _settings.arabicFontSize;
+  double get latinFontSize => _settings.latinFontSize;
+  ThemeMode get themeMode => _settings.themeMode;
+  bool get showArabic => _settings.showArabic;
+  bool get showLatin => _settings.showLatin;
+  bool get showTranslation => _settings.showTranslation;
 
-  double _arabicFontSize = 36.0;
-  double _latinFontSize = 14.0;
-  ThemeMode _themeMode = ThemeMode.system;
-  bool _showArabic = true;
-  bool _showLatin = true;
-  bool _showTranslation = true;
-
-  double get arabicFontSize => _arabicFontSize;
-  double get latinFontSize => _latinFontSize;
-  ThemeMode get themeMode => _themeMode;
-  bool get showArabic => _showArabic;
-  bool get showLatin => _showLatin;
-  bool get showTranslation => _showTranslation;
-
-  SettingsProvider({required StorageService storageService}) : _storage = storageService {
+  SettingsProvider({
+    required GetSettingsUseCase getSettingsUseCase,
+    required SaveSettingsUseCase saveSettingsUseCase,
+  })  : _getSettingsUseCase = getSettingsUseCase,
+        _saveSettingsUseCase = saveSettingsUseCase {
     _loadSettings();
   }
 
-  void _loadSettings() {
-    _arabicFontSize = _storage.getDouble(_arabicFontSizeKey) ?? 36.0;
-    _latinFontSize = _storage.getDouble(_latinFontSizeKey) ?? 14.0;
-    _showArabic = _storage.getBool(_showArabicKey) ?? true;
-    _showLatin = _storage.getBool(_showLatinKey) ?? true;
-    _showTranslation = _storage.getBool(_showTranslationKey) ?? true;
-    
-    final themeIdx = _storage.getInt(_themeModeKey);
-    if (themeIdx != null && themeIdx >= 0 && themeIdx < ThemeMode.values.length) {
-      _themeMode = ThemeMode.values[themeIdx];
-    }
-    
+  Future<void> _loadSettings() async {
+    final result = await _getSettingsUseCase.execute();
+    result.fold(
+      (failure) {
+        // Fallback to default if fail
+        _settings = AppSettings();
+      },
+      (settings) {
+        _settings = settings;
+      },
+    );
     notifyListeners();
+  }
+
+  Future<void> _updateSettings(AppSettings newSettings) async {
+    _settings = newSettings;
+    notifyListeners();
+    await _saveSettingsUseCase.execute(_settings);
   }
 
   Future<void> setArabicFontSize(double size) async {
-    _arabicFontSize = size;
-    notifyListeners();
-    await _storage.setDouble(_arabicFontSizeKey, size);
+    await _updateSettings(_settings.copyWith(arabicFontSize: size));
   }
 
   Future<void> setLatinFontSize(double size) async {
-    _latinFontSize = size;
-    notifyListeners();
-    await _storage.setDouble(_latinFontSizeKey, size);
+    await _updateSettings(_settings.copyWith(latinFontSize: size));
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    _themeMode = mode;
-    notifyListeners();
-    await _storage.setInt(_themeModeKey, mode.index);
+    await _updateSettings(_settings.copyWith(themeMode: mode));
   }
 
   Future<void> setShowArabic(bool show) async {
-    _showArabic = show;
-    notifyListeners();
-    await _storage.setBool(_showArabicKey, show);
+    await _updateSettings(_settings.copyWith(showArabic: show));
   }
 
   Future<void> setShowLatin(bool show) async {
-    _showLatin = show;
-    notifyListeners();
-    await _storage.setBool(_showLatinKey, show);
+    await _updateSettings(_settings.copyWith(showLatin: show));
   }
 
   Future<void> setShowTranslation(bool show) async {
-    _showTranslation = show;
-    notifyListeners();
-    await _storage.setBool(_showTranslationKey, show);
+    await _updateSettings(_settings.copyWith(showTranslation: show));
   }
 }

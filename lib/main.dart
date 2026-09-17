@@ -8,6 +8,8 @@ import 'package:adhan_reminder/features/quran/presentation/providers/quran_provi
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_download_provider.dart';
 import 'package:adhan_reminder/features/settings/presentation/providers/settings_provider.dart';
 import 'package:adhan_reminder/features/qibla/presentation/providers/qibla_provider.dart';
+import 'package:adhan_reminder/features/doa/presentation/providers/doa_provider.dart';
+import 'package:adhan_reminder/features/sholat/presentation/providers/sholat_provider.dart';
 import 'package:adhan_reminder/core/di/injection.dart';
 import 'package:adhan_reminder/core/services/notification_service.dart';
 import 'package:adhan_reminder/core/services/alarm_service.dart';
@@ -40,6 +42,8 @@ class AdhanReminderApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: getIt<AdhanProvider>()),
         ChangeNotifierProvider.value(value: getIt<QuranAudioProvider>()),
         ChangeNotifierProvider.value(value: getIt<QuranProvider>()..loadSurahs()),
+        ChangeNotifierProvider.value(value: getIt<DoaProvider>()),
+        ChangeNotifierProvider.value(value: getIt<SholatProvider>()),
 
         ChangeNotifierProvider.value(value: getIt<QuranDownloadProvider>()),
         ChangeNotifierProvider.value(value: getIt<SettingsProvider>()),
