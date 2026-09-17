@@ -149,7 +149,7 @@ class QuranAudioProvider with ChangeNotifier {
     _builtQoriId = _selectedQoriId;
   }
 
-  Future<void> toggleAudio(Surah surah, BuildContext? context, {List<Surah>? allSurahs, List<Ayah>? ayahs}) async {
+  Future<void> toggleAudio(Surah surah, {List<Surah>? allSurahs, List<Ayah>? ayahs}) async {
     if (allSurahs != null && allSurahs.isNotEmpty) {
       _allSurahs = allSurahs;
     } else if (ayahs != null) {
@@ -224,14 +224,7 @@ class QuranAudioProvider with ChangeNotifier {
         _isBuffering = false;
         _isPlaying = false;
         notifyListeners();
-        if (context != null && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Koneksi internet terputus atau audio gagal dimuat.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        throw Exception('Koneksi internet terputus atau audio gagal dimuat.');
       }
     }
 

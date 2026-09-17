@@ -104,7 +104,18 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     final quranAudio = context.read<QuranAudioProvider>();
     final quranProvider = context.read<QuranProvider>();
     final ayahs = quranProvider.getAyahs(widget.surah.nomor);
-    await quranAudio.toggleAudio(widget.surah, context, ayahs: ayahs);
+    try {
+      await quranAudio.toggleAudio(widget.surah, ayahs: ayahs);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _showDisplayFilters() {

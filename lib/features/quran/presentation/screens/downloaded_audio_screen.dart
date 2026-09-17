@@ -69,22 +69,31 @@ class DownloadedAudioScreen extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                           size: 32,
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (isPlayingThis) {
                             audioProvider.stopAudio();
                           } else {
                             audioProvider.setQori(item.qoriId);
-
 
                             final allDownloadedSurahs = items
                                 .where((i) => i.qoriId == item.qoriId)
                                 .map((i) => i.surah)
                                 .toList();
 
-
                             allDownloadedSurahs.sort((a, b) => a.nomor.compareTo(b.nomor));
 
-                            audioProvider.toggleAudio(surah, context, allSurahs: allDownloadedSurahs);
+                            try {
+                              await audioProvider.toggleAudio(surah, allSurahs: allDownloadedSurahs);
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(e.toString().replaceAll('Exception: ', '')),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
                           }
                         },
                       ),
