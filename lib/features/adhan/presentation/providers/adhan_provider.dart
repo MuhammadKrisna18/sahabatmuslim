@@ -215,6 +215,7 @@ class AdhanProvider with ChangeNotifier {
         isActive: isActive,
         volume: old.volume,
       );
+      _schedules = List.from(_schedules);
       notifyListeners();
       _saveSchedules();
       _scheduleAlarms();
@@ -237,6 +238,7 @@ class AdhanProvider with ChangeNotifier {
         volume: newSchedule.volume,
       );
       _sortSchedules();
+      _schedules = List.from(_schedules);
       notifyListeners();
       _saveSchedules();
       _scheduleAlarms();

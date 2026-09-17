@@ -28,19 +28,19 @@ class AdhanScheduleCard extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? context.textPrimaryColor : context.backgroundColor,
+          backgroundColor: context.surfaceColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
             'Konfirmasi',
             style: TextStyle(
-              color: isDark ? context.backgroundColor : context.textPrimaryColor,
+              color: context.textPrimaryColor,
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
             'Apakah Anda yakin ingin ${willActivate ? "mengaktifkan" : "menonaktifkan"} adzan untuk ${schedule.id}?',
             style: TextStyle(
-              color: isDark ? AppColors.primary.withOpacity(0.3) : context.textSecondaryColor,
+              color: context.textSecondaryColor,
             ),
           ),
           actions: [
@@ -51,7 +51,7 @@ class AdhanScheduleCard extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: context.backgroundColor,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () => Navigator.of(context).pop(true),

@@ -178,10 +178,10 @@ class _ScheduleListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final schedules = context.select<AdhanProvider, List<AdhanSchedule>>((p) => p.schedules);
-    final nextScheduleId = context.select<AdhanProvider, String?>((p) => p.nextSchedule?.id);
-    final errorMessage = context.select<AdhanProvider, String?>((p) => p.errorMessage);
-    final adhanProvider = context.read<AdhanProvider>();
+    final adhanProvider = context.watch<AdhanProvider>();
+    final schedules = adhanProvider.schedules;
+    final nextScheduleId = adhanProvider.nextSchedule?.id;
+    final errorMessage = adhanProvider.errorMessage;
 
     return Expanded(
       child: RefreshIndicator(
@@ -254,33 +254,7 @@ class _ScheduleListSection extends StatelessWidget {
                       index: index,
                       isNext: nextScheduleId == schedule.id,
                       onToggle: (String id, bool isActive) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              title: const Text('Konfirmasi', style: TextStyle(fontWeight: FontWeight.bold)),
-                              content: Text('Apakah Anda yakin ingin ${isActive ? "mengaktifkan" : "menonaktifkan"} adzan untuk sholat $id?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Batal', style: TextStyle(color: Colors.grey)),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    adhanProvider.toggleSchedule(id, isActive);
-                                  },
-                                  child: const Text('Ya'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        adhanProvider.toggleSchedule(id, isActive);
                       },
                       onSettingsPressed: (AdhanSchedule s) {
                         _navigateToAddSchedule(context, schedule: s, adhanProvider: adhanProvider);
