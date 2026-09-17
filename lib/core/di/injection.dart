@@ -79,12 +79,18 @@ Future<void> setupInjection() async {
         storageService: getIt<StorageService>(),
         alarmService: getIt<AlarmService>(),
       ));
-  getIt.registerLazySingleton<QuranAudioProvider>(() => QuranAudioProvider());
+  
   getIt.registerLazySingleton<QuranProvider>(() => QuranProvider(
         getSurahsUseCase: getIt<GetSurahsUseCase>(),
         getSurahDetailUseCase: getIt<GetSurahDetailUseCase>(),
         storageService: getIt<StorageService>(),
       ));
+
+  getIt.registerLazySingleton<QuranAudioProvider>(() => QuranAudioProvider(
+    audioPlayerService: getIt<AudioPlayerService>(),
+    quranProvider: getIt<QuranProvider>(),
+    quranDownloadProvider: getIt<QuranDownloadProvider>(),
+  ));
 
   getIt.registerLazySingleton<SettingsProvider>(() => SettingsProvider(
     getSettingsUseCase: getIt<GetSettingsUseCase>(),

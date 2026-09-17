@@ -5,7 +5,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/ayah.dart';
-import 'package:adhan_reminder/core/di/injection.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_download_provider.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_provider.dart';
 
@@ -16,7 +15,9 @@ class QuranAudioProvider with ChangeNotifier {
   
   List<Ayah> _currentAyahs = [];
 
-  final AudioPlayerService _audioPlayerService = getIt<AudioPlayerService>();
+  final AudioPlayerService _audioPlayerService;
+  final QuranProvider _quranProvider;
+  final QuranDownloadProvider _quranDownloadProvider;
 
   Surah? _currentSurah;
   String _selectedQoriId = '05';
@@ -47,7 +48,13 @@ class QuranAudioProvider with ChangeNotifier {
   double get playbackRate => _playbackRate;
   List<Ayah> get currentAyahs => _currentAyahs;
 
-  QuranAudioProvider() {
+  QuranAudioProvider({
+    required AudioPlayerService audioPlayerService,
+    required QuranProvider quranProvider,
+    required QuranDownloadProvider quranDownloadProvider,
+  })  : _audioPlayerService = audioPlayerService,
+        _quranProvider = quranProvider,
+        _quranDownloadProvider = quranDownloadProvider {
     _audioPlayerService.playerStateStream.listen((state) async {
       _isPlaying = state.playing;
       if (state.processingState == ProcessingState.ready ||
@@ -103,15 +110,14 @@ class QuranAudioProvider with ChangeNotifier {
       return; // Already stopped
     }
     
-    final quranProvider = getIt<QuranProvider>();
-    final surahList = quranProvider.surahList;
+    final surahList = _quranProvider.surahList;
     if (surahList.isEmpty || _currentSurah == null) return;
 
     if (state == LoopModeState.sequential) {
       int nextIndex = surahList.indexWhere((s) => s.nomor == _currentSurah!.nomor) + 1;
       if (nextIndex < surahList.length) {
         final nextSurah = surahList[nextIndex];
-        final nextAyahs = quranProvider.getAyahs(nextSurah.nomor);
+        final nextAyahs = _quranProvider.getAyahs(nextSurah.nomor);
         // Delay slightly to ensure UI is ready and avoid race conditions
         Future.delayed(const Duration(milliseconds: 500), () {
           toggleAudio(nextSurah, null, ayahs: nextAyahs);
@@ -120,7 +126,7 @@ class QuranAudioProvider with ChangeNotifier {
     } else if (state == LoopModeState.shuffle) {
       int randomIndex = Random().nextInt(surahList.length);
       final randomSurah = surahList[randomIndex];
-      final randomAyahs = quranProvider.getAyahs(randomSurah.nomor);
+      final randomAyahs = _quranProvider.getAyahs(randomSurah.nomor);
       Future.delayed(const Duration(milliseconds: 500), () {
         toggleAudio(randomSurah, null, ayahs: randomAyahs);
       });
@@ -163,8 +169,7 @@ class QuranAudioProvider with ChangeNotifier {
       }
 
       if (audioUrl != null && audioUrl.isNotEmpty) {
-        final downloadProvider = getIt<QuranDownloadProvider>();
-        final localPath = downloadProvider.getLocalPath(s.nomor, _selectedQoriId);
+        final localPath = _quranDownloadProvider.getLocalPath(s.nomor, _selectedQoriId);
         final bool isLocal = localPath != null && File(localPath).existsSync();
 
         children.add(
@@ -248,8 +253,7 @@ class QuranAudioProvider with ChangeNotifier {
 
         // Cek apakah mode Ayah tersedia (Qori 01-06 memiliki audioUrls per ayat)
         bool canPlayAyah = ayahs != null && ayahs.isNotEmpty && int.parse(_selectedQoriId) <= 6;
-        final downloadProvider = getIt<QuranDownloadProvider>();
-        final localPath = downloadProvider.getLocalPath(surah.nomor, _selectedQoriId);
+        final localPath = _quranDownloadProvider.getLocalPath(surah.nomor, _selectedQoriId);
         final bool isLocal = localPath != null && File(localPath).existsSync();
 
         // Jika OFFLINE (sudah didownload) ATAU Qori > 05, paksa mode Full Surah
