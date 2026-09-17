@@ -18,6 +18,7 @@ void main() {
   late MockAlarmService mockAlarmService;
 
   setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(<AdhanSchedule>[]);
   });
 
