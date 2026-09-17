@@ -152,9 +152,10 @@ class QuranAudioProvider with ChangeNotifier {
   Future<void> toggleAudio(Surah surah, {List<Surah>? allSurahs, List<Ayah>? ayahs}) async {
     if (allSurahs != null && allSurahs.isNotEmpty) {
       _allSurahs = allSurahs;
-    } else if (ayahs != null) {
+      _currentAyahs = [];
+    } else {
       _allSurahs = [];
-      _isPlaylistBuilt = false;
+      _currentAyahs = ayahs ?? [];
     }
 
     try {
@@ -179,16 +180,21 @@ class QuranAudioProvider with ChangeNotifier {
           await _audioPlayerService.play();
         }
       } else {
+        bool isSameSurah = _currentSurah?.nomor == surah.nomor;
 
-        if (_currentSurah?.nomor != surah.nomor) {
+        if (!isSameSurah) {
           await _audioPlayerService.stop();
+          _isPlaying = false; // Hindari race condition
           _currentSurah = surah;
-          if (ayahs != null) _currentAyahs = ayahs;
+          _isPlaylistBuilt = false;
           notifyListeners();
         }
 
-        if (_isPlaying) {
+        if (isSameSurah && _isPlaying) {
           await _audioPlayerService.pause();
+          return;
+        } else if (isSameSurah && !_isPlaying && _isPlaylistBuilt && _builtQoriId == _selectedQoriId) {
+          await _audioPlayerService.play();
           return;
         }
 
@@ -215,6 +221,9 @@ class QuranAudioProvider with ChangeNotifier {
             await _audioPlayerService.setLoopMode(LoopMode.off);
           }
         }
+        
+        _isPlaylistBuilt = true;
+        _builtQoriId = _selectedQoriId;
         
         if (!_isPlaying) {
             await _audioPlayerService.play();

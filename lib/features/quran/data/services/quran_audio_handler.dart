@@ -22,6 +22,27 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
     });
   }
 
+  MediaControl _getLoopControl(LoopModeState state) {
+    switch (state) {
+      case LoopModeState.shuffle:
+        return const MediaControl(
+            androidIcon: 'drawable/ic_shuffle',
+            label: 'Shuffle',
+            action: MediaAction.setRepeatMode);
+      case LoopModeState.repeatOne:
+        return const MediaControl(
+            androidIcon: 'drawable/ic_repeat_one',
+            label: 'Repeat 1',
+            action: MediaAction.setRepeatMode);
+      case LoopModeState.sequential:
+      case LoopModeState.playOnce:
+        return const MediaControl(
+            androidIcon: 'drawable/ic_repeat',
+            label: 'Repeat',
+            action: MediaAction.setRepeatMode);
+    }
+  }
+
   void _broadcastState() {
     final playing = _player.playing;
     final processingState = const {
@@ -36,16 +57,9 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
 
     playbackState.add(playbackState.value.copyWith(
       controls: [
+        _getLoopControl(loopState),
         MediaControl.skipToPrevious,
-        if (loopState == LoopModeState.repeatOne)
-          const MediaControl(androidIcon: 'drawable/ic_repeat_one', label: 'Repeat 1', action: MediaAction.setRepeatMode)
-        else
-          const MediaControl(androidIcon: 'drawable/ic_repeat', label: 'Repeat', action: MediaAction.setRepeatMode),
         if (playing) MediaControl.pause else MediaControl.play,
-        if (loopState == LoopModeState.shuffle)
-          const MediaControl(androidIcon: 'drawable/ic_shuffle_on', label: 'Shuffle On', action: MediaAction.setShuffleMode)
-        else
-          const MediaControl(androidIcon: 'drawable/ic_shuffle', label: 'Shuffle', action: MediaAction.setShuffleMode),
         MediaControl.skipToNext,
       ],
       systemActions: const {
@@ -54,9 +68,8 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
         MediaAction.seekBackward,
         MediaAction.playPause,
         MediaAction.setRepeatMode,
-        MediaAction.setShuffleMode,
       },
-      androidCompactActionIndices: const [0, 2, 4],
+      androidCompactActionIndices: const [1, 2, 3],
       processingState: processingState,
       playing: playing,
       updatePosition: _player.position,
@@ -85,27 +98,11 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
-    final currentState = _audioPlayerService.customLoopModeNotifier.value;
-    LoopModeState nextState;
-    if (currentState == LoopModeState.playOnce) {
-      nextState = LoopModeState.sequential;
-    } else if (currentState == LoopModeState.sequential) {
-      nextState = LoopModeState.repeatOne;
-    } else if (currentState == LoopModeState.repeatOne) {
-      nextState = LoopModeState.playOnce;
-    } else {
-      nextState = LoopModeState.sequential;
-    }
-    _audioPlayerService.customLoopModeNotifier.value = nextState;
+    await _audioPlayerService.toggleCustomLoopMode();
   }
 
   @override
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
-    final currentState = _audioPlayerService.customLoopModeNotifier.value;
-    if (currentState == LoopModeState.shuffle) {
-      _audioPlayerService.customLoopModeNotifier.value = LoopModeState.sequential;
-    } else {
-      _audioPlayerService.customLoopModeNotifier.value = LoopModeState.shuffle;
-    }
+    await _audioPlayerService.toggleCustomLoopMode();
   }
 }

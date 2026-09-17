@@ -74,6 +74,32 @@ class AudioPlayerService {
     await audioPlayer.setSpeed(speed);
   }
 
+  Future<void> toggleCustomLoopMode() async {
+    final currentState = customLoopModeNotifier.value;
+    LoopModeState nextState;
+
+    switch (currentState) {
+      case LoopModeState.playOnce:
+        nextState = LoopModeState.sequential;
+        await setLoopMode(LoopMode.off);
+        break;
+      case LoopModeState.sequential:
+        nextState = LoopModeState.repeatOne;
+        await setLoopMode(LoopMode.all); 
+        break;
+      case LoopModeState.repeatOne:
+        nextState = LoopModeState.shuffle;
+        await setLoopMode(LoopMode.off); 
+        break;
+      case LoopModeState.shuffle:
+        nextState = LoopModeState.playOnce;
+        await setLoopMode(LoopMode.off);
+        break;
+    }
+    
+    customLoopModeNotifier.value = nextState;
+  }
+
   Future<void> setLoopMode(LoopMode mode) async {
     await audioPlayer.setLoopMode(mode);
   }
