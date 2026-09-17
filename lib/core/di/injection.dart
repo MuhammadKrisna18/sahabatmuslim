@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:adhan_reminder/features/quran/data/services/playlist_manager.dart';
 import 'package:adhan_reminder/features/adhan/data/repositories/prayer_time_repository_impl.dart';
 import 'package:adhan_reminder/features/adhan/domain/repositories/prayer_time_repository.dart';
 import 'package:adhan_reminder/features/adhan/domain/usecases/get_prayer_times_usecase.dart';
@@ -86,10 +87,15 @@ Future<void> setupInjection() async {
         storageService: getIt<StorageService>(),
       ));
 
+  getIt.registerLazySingleton<PlaylistManager>(() => PlaylistManager(
+    audioPlayerService: getIt<AudioPlayerService>(),
+    quranDownloadProvider: getIt<QuranDownloadProvider>(),
+  ));
+
   getIt.registerLazySingleton<QuranAudioProvider>(() => QuranAudioProvider(
     audioPlayerService: getIt<AudioPlayerService>(),
     quranProvider: getIt<QuranProvider>(),
-    quranDownloadProvider: getIt<QuranDownloadProvider>(),
+    playlistManager: getIt<PlaylistManager>(),
   ));
 
   getIt.registerLazySingleton<SettingsProvider>(() => SettingsProvider(

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:audio_service/audio_service.dart';
-import 'dart:io';
 import 'dart:math';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/ayah.dart';
-import 'package:adhan_reminder/features/quran/presentation/providers/quran_download_provider.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_provider.dart';
 
 import 'package:adhan_reminder/features/quran/data/services/audio_player_service.dart';
+import 'package:adhan_reminder/features/quran/data/services/playlist_manager.dart';
+import 'package:adhan_reminder/features/quran/data/services/qori_audio_resolver.dart';
 
 class QuranAudioProvider with ChangeNotifier {
   LoopModeState get loopModeState => _audioPlayerService.customLoopModeNotifier.value;
@@ -17,7 +16,7 @@ class QuranAudioProvider with ChangeNotifier {
 
   final AudioPlayerService _audioPlayerService;
   final QuranProvider _quranProvider;
-  final QuranDownloadProvider _quranDownloadProvider;
+  final PlaylistManager _playlistManager;
 
   Surah? _currentSurah;
   String _selectedQoriId = '05';
@@ -27,17 +26,6 @@ class QuranAudioProvider with ChangeNotifier {
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   double _playbackRate = 1.0;
-  Uri? _artUriCache;
-
-  Future<Uri?> _getArtUri() async {
-    return await _audioPlayerService.getArtUri();
-  }
-
-  final Map<String, String> qoriNames = {
-    '05': 'Mishary Rashid Alafasy',
-    '07': 'Saad Al Ghamdi',
-    '09': 'Alaa Aqel',
-  };
 
   Surah? get currentSurah => _currentSurah;
   String get selectedQoriId => _selectedQoriId;
@@ -47,14 +35,19 @@ class QuranAudioProvider with ChangeNotifier {
   Duration get position => _position;
   double get playbackRate => _playbackRate;
   List<Ayah> get currentAyahs => _currentAyahs;
+  Map<String, String> get qoriNames => QoriAudioResolver.qoriNames;
 
   QuranAudioProvider({
     required AudioPlayerService audioPlayerService,
     required QuranProvider quranProvider,
-    required QuranDownloadProvider quranDownloadProvider,
+    required PlaylistManager playlistManager,
   })  : _audioPlayerService = audioPlayerService,
         _quranProvider = quranProvider,
-        _quranDownloadProvider = quranDownloadProvider {
+        _playlistManager = playlistManager {
+    _initListeners();
+  }
+
+  void _initListeners() {
     _audioPlayerService.playerStateStream.listen((state) async {
       _isPlaying = state.playing;
       if (state.processingState == ProcessingState.ready ||
@@ -107,7 +100,7 @@ class QuranAudioProvider with ChangeNotifier {
   Future<void> _handleSurahCompletion() async {
     final state = loopModeState;
     if (state == LoopModeState.playOnce) {
-      return; // Already stopped
+      return; 
     }
     
     final surahList = _quranProvider.surahList;
@@ -118,7 +111,6 @@ class QuranAudioProvider with ChangeNotifier {
       if (nextIndex < surahList.length) {
         final nextSurah = surahList[nextIndex];
         final nextAyahs = _quranProvider.getAyahs(nextSurah.nomor);
-        // Delay slightly to ensure UI is ready and avoid race conditions
         Future.delayed(const Duration(milliseconds: 500), () {
           toggleAudio(nextSurah, null, ayahs: nextAyahs);
         });
@@ -152,55 +144,7 @@ class QuranAudioProvider with ChangeNotifier {
 
   Future<void> _buildPlaylist() async {
     if (_allSurahs.isEmpty) return;
-    final artUri = await _getArtUri();
-
-    final children = <AudioSource>[];
-    for (var s in _allSurahs) {
-      String? audioUrl;
-      if (_selectedQoriId == '07') {
-        audioUrl = 'https://server7.mp3quran.net/s_gmd/${s.nomor.toString().padLeft(3, '0')}.mp3';
-      } else if (_selectedQoriId == '09') {
-        audioUrl = 'https://archive.org/download/AlaaAql/${s.nomor.toString().padLeft(3, '0')}.mp3';
-      } else {
-        audioUrl = s.audioUrls[_selectedQoriId];
-        if (audioUrl == null && s.audioUrls.isNotEmpty) {
-          audioUrl = s.audioUrls.values.first;
-        }
-      }
-
-      if (audioUrl != null && audioUrl.isNotEmpty) {
-        final localPath = _quranDownloadProvider.getLocalPath(s.nomor, _selectedQoriId);
-        final bool isLocal = localPath != null && File(localPath).existsSync();
-
-        children.add(
-          isLocal
-              ? AudioSource.uri(
-                  Uri.file(localPath),
-                  tag: MediaItem(
-                    id: '${s.nomor}-$_selectedQoriId-${DateTime.now().millisecondsSinceEpoch}',
-                    album: 'Murottal SahabatMuslim',
-                    title: 'Surah ${s.namaLatin} (Offline)',
-                    artist: qoriNames[_selectedQoriId] ?? "Qori",
-                    artUri: artUri,
-                  ),
-                )
-              : AudioSource.uri(
-                  Uri.parse(audioUrl),
-                  tag: MediaItem(
-                    id: '${s.nomor}-$_selectedQoriId-${DateTime.now().millisecondsSinceEpoch}',
-                    album: 'Murottal SahabatMuslim',
-                    title: 'Surah ${s.namaLatin}',
-                    artist: qoriNames[_selectedQoriId] ?? "Qori",
-                    artUri: artUri,
-                  ),
-                ),
-        );
-      }
-    }
-
-    await _audioPlayerService.setAudioSource(
-      ConcatenatingAudioSource(children: children),
-    );
+    await _playlistManager.buildFullPlaylist(_allSurahs, _selectedQoriId);
     _isPlaylistBuilt = true;
     _builtQoriId = _selectedQoriId;
   }
@@ -253,105 +197,28 @@ class QuranAudioProvider with ChangeNotifier {
 
         // Cek apakah mode Ayah tersedia (Qori 01-06 memiliki audioUrls per ayat)
         bool canPlayAyah = ayahs != null && ayahs.isNotEmpty && int.parse(_selectedQoriId) <= 6;
-        final localPath = _quranDownloadProvider.getLocalPath(surah.nomor, _selectedQoriId);
-        final bool isLocal = localPath != null && File(localPath).existsSync();
-
-        // Jika OFFLINE (sudah didownload) ATAU Qori > 05, paksa mode Full Surah
-        if (isLocal || !canPlayAyah) {
-          String? audioUrl;
-          if (_selectedQoriId == '07') {
-            audioUrl = 'https://server7.mp3quran.net/s_gmd/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-          } else if (_selectedQoriId == '09') {
-            audioUrl = 'https://archive.org/download/AlaaAql/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-          } else {
-            audioUrl = surah.audioUrls[_selectedQoriId] ?? (surah.audioUrls.isNotEmpty ? surah.audioUrls.values.first : null);
-          }
-
-          if (audioUrl == null || audioUrl.isEmpty) {
-            if (context != null && context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Audio tidak tersedia untuk surah ini.')));
-            }
-            _isBuffering = false;
-            notifyListeners();
-            return;
-          }
-
-          final expectedId = '${surah.nomor}-$_selectedQoriId-${DateTime.now().millisecondsSinceEpoch}';
-          final artUri = await _getArtUri();
-
-          await _audioPlayerService.setAudioSource(
-            isLocal
-                ? AudioSource.uri(
-                    Uri.file(localPath),
-                    tag: MediaItem(
-                      id: expectedId,
-                      album: 'Murottal SahabatMuslim',
-                      title: 'Surah ${surah.namaLatin} (Offline)',
-                      artist: qoriNames[_selectedQoriId] ?? "Qori",
-                      artUri: artUri,
-                    ),
-                  )
-                : AudioSource.uri(
-                    Uri.parse(audioUrl),
-                    tag: MediaItem(
-                      id: expectedId,
-                      album: 'Murottal SahabatMuslim',
-                      title: 'Surah ${surah.namaLatin}',
-                      artist: qoriNames[_selectedQoriId] ?? "Qori",
-                      artUri: artUri,
-                    ),
-                  ),
-          );
+        
+        // Jika tidak mendukung per-ayat, putar full surah
+        if (!canPlayAyah) {
+          await _playlistManager.buildSingleSurahPlaylist(surah, _selectedQoriId);
         } else {
           // Play Per Ayat
-          List<AudioSource> children = [];
-          final artUri = await _getArtUri();
+          await _playlistManager.buildAyahPlaylist(surah, ayahs!, _selectedQoriId);
           
-          for (var ayah in ayahs!) {
-            String? ayahAudioUrl = ayah.audioUrls[_selectedQoriId];
-            if (ayahAudioUrl != null) {
-              children.add(
-                AudioSource.uri(
-                  Uri.parse(ayahAudioUrl),
-                  tag: MediaItem(
-                    id: '${surah.nomor}-${ayah.nomorAyat}-$_selectedQoriId',
-                    album: 'Surah ${surah.namaLatin}',
-                    title: 'Ayat ${ayah.nomorAyat}',
-                    artist: qoriNames[_selectedQoriId] ?? "Qori",
-                    artUri: artUri,
-                  ),
-                )
-              );
-            }
-          }
-          
-          if (children.isEmpty) {
-            if (context != null && context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Audio ayat tidak tersedia.')));
-            }
-            _isBuffering = false;
-            notifyListeners();
-            return;
-          }
-
-          await _audioPlayerService.setAudioSource(ConcatenatingAudioSource(children: children));
-          
-          // Apply current native loop mode based on custom state
           final state = loopModeState;
           if (state == LoopModeState.repeatOne) {
             await _audioPlayerService.setShuffleModeEnabled(false);
             await _audioPlayerService.setLoopMode(LoopMode.all);
           } else {
-            // For playOnce, sequential, and shuffle, native loop mode is off
             await _audioPlayerService.setShuffleModeEnabled(false);
             await _audioPlayerService.setLoopMode(LoopMode.off);
           }
-
-          if (!_isPlaying) {
-            await _audioPlayerService.play();
-          }
         }
-      } // Closes else block from line 236
+        
+        if (!_isPlaying) {
+            await _audioPlayerService.play();
+        }
+      } 
     } catch (e) {
         debugPrint('Error playing audio: $e');
         _isBuffering = false;
@@ -379,11 +246,11 @@ class QuranAudioProvider with ChangeNotifier {
         break;
       case LoopModeState.sequential:
         nextState = LoopModeState.repeatOne;
-        await _audioPlayerService.setLoopMode(LoopMode.all); // Loop current surah natively
+        await _audioPlayerService.setLoopMode(LoopMode.all); 
         break;
       case LoopModeState.repeatOne:
         nextState = LoopModeState.shuffle;
-        await _audioPlayerService.setLoopMode(LoopMode.off); // Let custom logic handle next surah
+        await _audioPlayerService.setLoopMode(LoopMode.off); 
         break;
       case LoopModeState.shuffle:
         nextState = LoopModeState.playOnce;
@@ -419,23 +286,7 @@ class QuranAudioProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  @override
-  void dispose() {
-
-    super.dispose();
-  }
-
   String? getAudioUrl(Surah surah, String qoriId) {
-    if (qoriId == '07') {
-      return 'https://server7.mp3quran.net/s_gmd/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-    } else if (qoriId == '09') {
-      return 'https://archive.org/download/AlaaAql/${surah.nomor.toString().padLeft(3, '0')}.mp3';
-    } else {
-      String? url = surah.audioUrls[qoriId];
-      if (url == null && surah.audioUrls.isNotEmpty) {
-        url = surah.audioUrls.values.first;
-      }
-      return url;
-    }
+    return QoriAudioResolver.getAudioUrl(surah, qoriId);
   }
 }
