@@ -97,7 +97,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     }
   }
 
-  void _toggleAudio() async {
+  void _doToggleAudio() async {
     final quranAudio = context.read<QuranAudioProvider>();
     final quranProvider = context.read<QuranProvider>();
     final ayahs = quranProvider.getAyahs(widget.surah.nomor);
@@ -112,6 +112,18 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           ),
         );
       }
+    }
+  }
+
+  void _toggleAudio() async {
+    final quranAudio = context.read<QuranAudioProvider>();
+    
+    // Jika sedang memutar surah yang sama, berarti fungsi ini digunakan untuk PAUSE.
+    if (quranAudio.isPlaying && quranAudio.currentSurah?.nomor == widget.surah.nomor) {
+      _doToggleAudio();
+    } else {
+      // Tampilkan dialog pilihan Qori
+      _showQoriSelectionDialog();
     }
   }
 
@@ -173,54 +185,71 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     );
   }
 
-  void _showQoriSelection() {
-    showModalBottomSheet(
+  void _showQoriSelectionDialog() {
+    final quranAudio = context.read<QuranAudioProvider>();
+    String tempSelectedQoriId = quranAudio.selectedQoriId;
+    
+    showDialog(
       context: context,
-      backgroundColor: context.surfaceColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (context) {
-        final quranAudio = context.read<QuranAudioProvider>();
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Pilih Suara Qori',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
-                ),
-                const SizedBox(height: 16),
-                ...quranAudio.qoriNames.keys.map((id) {
-                  bool isAvailable = true;
-                  if (id != '07' && id != '08' && id != '09') {
-                    isAvailable = widget.surah.audioUrls.containsKey(id);
-                  }
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: context.surfaceColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text('Pilih Suara Qori', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: quranAudio.qoriNames.keys.map((id) {
+                    bool isAvailable = true;
+                    if (id != '07' && id != '08' && id != '09') {
+                      isAvailable = widget.surah.audioUrls.containsKey(id);
+                    }
 
-                  return ListTile(
-                    enabled: isAvailable,
-                    title: Text(
-                      quranAudio.qoriNames[id] ?? 'Qori $id',
-                      style: TextStyle(
-                        color: isAvailable ? context.textPrimaryColor : context.textSecondaryColor.withOpacity(0.5),
-                        decoration: isAvailable ? TextDecoration.none : TextDecoration.lineThrough,
+                    return RadioListTile<String>(
+                      title: Text(
+                        quranAudio.qoriNames[id] ?? 'Qori $id',
+                        style: TextStyle(
+                          color: isAvailable ? context.textPrimaryColor : context.textSecondaryColor.withOpacity(0.5),
+                          decoration: isAvailable ? TextDecoration.none : TextDecoration.lineThrough,
+                        ),
                       ),
-                    ),
-                    subtitle: isAvailable ? null : const Text('Tidak tersedia di Surah ini', style: TextStyle(color: Colors.red, fontSize: 12)),
-                    trailing: quranAudio.selectedQoriId == id
-                        ? const Icon(Icons.check_circle, color: Colors.blue)
-                        : null,
-                    onTap: () {
-                      quranAudio.setQori(id);
-                      Navigator.pop(context);
-                    },
-                  );
-                }),
+                      subtitle: isAvailable ? null : const Text('Tidak tersedia di Surah ini', style: TextStyle(color: Colors.red, fontSize: 12)),
+                      value: id,
+                      groupValue: tempSelectedQoriId,
+                      onChanged: isAvailable ? (value) {
+                        setState(() {
+                          tempSelectedQoriId = value!;
+                        });
+                      } : null,
+                      activeColor: AppColors.primary,
+                      contentPadding: EdgeInsets.zero,
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Batal', style: TextStyle(color: context.textSecondaryColor)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    quranAudio.setQori(tempSelectedQoriId);
+                    Navigator.pop(context);
+                    // Mulai pemutaran audio
+                    _doToggleAudio();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Mulai', style: TextStyle(color: Colors.white)),
+                ),
               ],
-            ),
-          ),
+            );
+          }
         );
       },
     );
@@ -356,10 +385,6 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                 icon: Icon(Icons.text_format, color: context.textPrimaryColor),
                 tooltip: 'Pengaturan Teks',
                 onPressed: () => TypographySettingsSheet.show(context),
-              ),
-              IconButton(
-                icon: const Icon(Icons.settings_voice, color: AppColors.primary),
-                onPressed: _showQoriSelection,
               ),
               Consumer<QuranAudioProvider>(
                 builder: (context, quranAudio, child) {
