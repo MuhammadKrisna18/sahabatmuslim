@@ -44,7 +44,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               child: Image.asset(
                 'assets/watermark.png',
                 fit: BoxFit.cover,
-                color: context.backgroundColor,
+                color: context.textPrimaryColor,
                 colorBlendMode: BlendMode.srcATop,
               ),
             ),

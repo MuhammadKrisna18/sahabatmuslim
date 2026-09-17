@@ -44,7 +44,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
 
         return DynamicScaffold(
           body: isLoading
-              ? Center(child: CircularProgressIndicator(color: context.backgroundColor))
+              ? Center(child: CircularProgressIndicator(color: context.textPrimaryColor))
               : RefreshIndicator(
                   onRefresh: () => quranProvider.loadSurahs(),
                   color: AppColors.primary,
@@ -59,7 +59,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         title: Text(
                           'Al-Qur\'an',
                           style: GoogleFonts.poppins(
-                            color: context.backgroundColor,
+                            color: context.textPrimaryColor,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
@@ -67,7 +67,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         centerTitle: false,
                         actions: [
                           IconButton(
-                            icon: Icon(Icons.download_done, color: context.backgroundColor),
+                            icon: Icon(Icons.download_done, color: context.textPrimaryColor),
                             tooltip: 'Unduhan Audio',
                             onPressed: () {
                               context.push('/downloaded-audio');
@@ -91,7 +91,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                           padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                           child: TextField(
                             controller: _searchController,
-                            style: TextStyle(color: context.backgroundColor),
+                            style: TextStyle(color: context.textPrimaryColor),
                             onChanged: quranProvider.updateSearchQuery,
                             decoration: InputDecoration(
                               hintText: 'Cari surah (contoh: Al-Fatihah)',
@@ -133,7 +133,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                             children: [
                               Icon(Icons.error_outline, color: context.textSecondaryColor, size: 48),
                               SizedBox(height: 16),
-                              Text(error, textAlign: TextAlign.center, style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                              Text(error, textAlign: TextAlign.center, style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                               SizedBox(height: 8),
                               Text('Pastikan koneksi internet Anda aktif.', textAlign: TextAlign.center, style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
                               const SizedBox(height: 16),
@@ -153,7 +153,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         SliverFillRemaining(
                           hasScrollBody: false,
                           child: Center(
-                            child: Text('Surah tidak ditemukan.', style: TextStyle(color: context.backgroundColor)),
+                            child: Text('Surah tidak ditemukan.', style: TextStyle(color: context.textPrimaryColor)),
                           ),
                         )
                       else

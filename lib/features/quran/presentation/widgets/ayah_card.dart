@@ -56,7 +56,7 @@ class AyahCard extends StatelessWidget {
                     IconButton(
                       icon: Icon(
                         bookmarkedAyah == ayah.nomorAyat ? Icons.bookmark : Icons.bookmark_add_outlined,
-                        color: bookmarkedAyah == ayah.nomorAyat ? Colors.amber : context.backgroundColor
+                        color: bookmarkedAyah == ayah.nomorAyat ? Colors.amber : context.textPrimaryColor
                       ),
                       onPressed: () => onSaveBookmark(ayah),
                       tooltip: 'Tandai terakhir dibaca',
@@ -96,7 +96,7 @@ class AyahCard extends StatelessWidget {
               ayah.teksArab,
               textAlign: TextAlign.right,
               style: GoogleFonts.amiri(
-                color: context.backgroundColor,
+                color: context.textPrimaryColor,
                 fontSize: settings.arabicFontSize,
                 height: 2.2,
               ),

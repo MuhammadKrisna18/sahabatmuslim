@@ -205,12 +205,12 @@ class _ScheduleListSection extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.location_off, color: context.backgroundColor, size: 24),
+                      Icon(Icons.location_off, color: context.textPrimaryColor, size: 24),
                       SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           errorMessage,
-                          style: TextStyle(color: context.backgroundColor, fontSize: 13),
+                          style: TextStyle(color: context.textPrimaryColor, fontSize: 13),
                         ),
                       ),
                     ],
@@ -236,7 +236,7 @@ class _ScheduleListSection extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: context.backgroundColor,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                   ),

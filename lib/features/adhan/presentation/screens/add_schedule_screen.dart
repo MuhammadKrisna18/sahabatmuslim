@@ -221,7 +221,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: context.backgroundColor,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () => context.pop(true),
@@ -270,7 +270,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: context.backgroundColor,
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1),
                 boxShadow: [
@@ -422,7 +422,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: context.backgroundColor,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 elevation: 8,

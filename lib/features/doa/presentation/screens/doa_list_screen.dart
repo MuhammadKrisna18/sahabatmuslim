@@ -27,11 +27,11 @@ class DoaListScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: context.backgroundColor),
+        iconTheme: IconThemeData(color: context.textPrimaryColor),
         title: Text(
           'Doa & Dzikir',
           style: GoogleFonts.poppins(
-            color: context.backgroundColor,
+            color: context.textPrimaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -39,7 +39,7 @@ class DoaListScreen extends StatelessWidget {
         centerTitle: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.text_format, color: context.backgroundColor),
+            icon: Icon(Icons.text_format, color: context.textPrimaryColor),
             tooltip: 'Pengaturan Teks',
             onPressed: () => TypographySettingsSheet.show(context),
           ),
@@ -74,7 +74,7 @@ class DoaListScreen extends StatelessWidget {
               );
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Gagal memuat doa', style: TextStyle(color: context.backgroundColor)));
+              return Center(child: Text('Gagal memuat doa', style: TextStyle(color: context.textPrimaryColor)));
             }
 
             final doaList = snapshot.data ?? [];
@@ -122,7 +122,7 @@ class DoaListScreen extends StatelessWidget {
                                 doa['arab']!,
                                 textAlign: TextAlign.right,
                                 style: GoogleFonts.amiri(
-                                  color: context.backgroundColor,
+                                  color: context.textPrimaryColor,
                                   fontSize: settings.arabicFontSize,
                                   height: 2.0,
                                 ),

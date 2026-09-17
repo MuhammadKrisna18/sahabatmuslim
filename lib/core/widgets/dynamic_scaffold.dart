@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:adhan_reminder/core/theme/theme_ext.dart';
 import 'package:adhan_reminder/core/utils/theme_utils.dart';
 import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 
@@ -27,9 +28,8 @@ class DynamicScaffold extends StatelessWidget {
 
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
-      decoration: ThemeUtils.getDynamicBackground(
-        adhanProvider.currentTime,
-        schedules: adhanProvider.schedules,
+      decoration: BoxDecoration(
+        color: context.backgroundColor,
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,

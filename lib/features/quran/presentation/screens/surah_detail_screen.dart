@@ -199,7 +199,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                     child: Text(
                       widget.surah.namaLatin,
                       style: TextStyle(
-                        color: context.backgroundColor,
+                        color: context.textPrimaryColor,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -280,7 +280,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.text_format, color: context.backgroundColor),
+                icon: Icon(Icons.text_format, color: context.textPrimaryColor),
                 tooltip: 'Pengaturan Teks',
                 onPressed: () => TypographySettingsSheet.show(context),
               ),
@@ -341,7 +341,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                       'اللّٰه',
                       style: GoogleFonts.amiri(
                         fontSize: 100,
-                        color: context.backgroundColor,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                   ),
@@ -361,7 +361,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                                   'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم',
                                   style: GoogleFonts.amiri(
                                     fontSize: 28,
-                                    color: context.backgroundColor,
+                                    color: context.textPrimaryColor,
                                   ),
                                 ),
                               )

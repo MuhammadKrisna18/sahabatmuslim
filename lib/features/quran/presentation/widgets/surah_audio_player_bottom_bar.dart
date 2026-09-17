@@ -82,7 +82,7 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Text(_formatDuration(quranAudio.position), style: TextStyle(color: context.backgroundColor, fontSize: 12, fontWeight: FontWeight.w500)),
+                    Text(_formatDuration(quranAudio.position), style: TextStyle(color: context.textPrimaryColor, fontSize: 12, fontWeight: FontWeight.w500)),
                     Expanded(
                       child: SliderTheme(
                         data: SliderTheme.of(context).copyWith(
@@ -104,7 +104,7 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(_formatDuration(quranAudio.duration), style: TextStyle(color: context.backgroundColor, fontSize: 12, fontWeight: FontWeight.w500)),
+                    Text(_formatDuration(quranAudio.duration), style: TextStyle(color: context.textPrimaryColor, fontSize: 12, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ],

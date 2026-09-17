@@ -26,12 +26,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: context.backgroundColor),
+        iconTheme: IconThemeData(color: context.textPrimaryColor),
         automaticallyImplyLeading: false,
         title: Text(
           'Arah Kiblat',
           style: GoogleFonts.poppins(
-            color: context.backgroundColor,
+            color: context.textPrimaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -86,7 +86,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                               child: Text(
                                 'Error membaca sensor kompas:\n${snapshot.error}', 
                                 textAlign: TextAlign.center, 
-                                style: TextStyle(color: context.backgroundColor)
+                                style: TextStyle(color: context.textPrimaryColor)
                               )
                             ),
                           ],
@@ -94,7 +94,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       }
 
                       if (snapshot.connectionState == ConnectionState.waiting || qiblaProvider.isLoading) {
-                        return Center(child: CircularProgressIndicator(color: context.backgroundColor));
+                        return Center(child: CircularProgressIndicator(color: context.textPrimaryColor));
                       }
 
                       double? heading = snapshot.data?.heading;
@@ -106,7 +106,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                             Center(
                               child: Text(
                                 'Sensor kompas tidak ditemukan di perangkat ini.', 
-                                style: TextStyle(color: context.backgroundColor)
+                                style: TextStyle(color: context.textPrimaryColor)
                               )
                             ),
                           ],
@@ -114,7 +114,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       }
 
                       if (qiblaProvider.qiblaDirection == null) {
-                        return Center(child: CircularProgressIndicator(color: context.backgroundColor));
+                        return Center(child: CircularProgressIndicator(color: context.textPrimaryColor));
                       }
 
                       double diff = (heading - qiblaProvider.qiblaDirection!).abs() % 360;
@@ -141,7 +141,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                               Text(
                                 'Arah Kiblat: ${qiblaProvider.qiblaDirection!.toStringAsFixed(1)}°',
                                 style: TextStyle(
-                                  color: context.backgroundColor,
+                                  color: context.textPrimaryColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -192,9 +192,9 @@ class _QiblaScreenState extends State<QiblaScreen> {
                                             alignment: Alignment.center,
                                             children: [
                                               Positioned(top: 10, child: Text('U', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20))),
-                                              Positioned(bottom: 10, child: Text('S', style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 20))),
-                                              Positioned(right: 10, child: Text('T', style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 20))),
-                                              Positioned(left: 10, child: Text('B', style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              Positioned(bottom: 10, child: Text('S', style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              Positioned(right: 10, child: Text('T', style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              Positioned(left: 10, child: Text('B', style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 20))),
                                               Container(width: 4, height: 260, color: AppColors.primary.withOpacity(0.05)),
                                               Container(width: 260, height: 4, color: AppColors.primary.withOpacity(0.05)),
                                             ],

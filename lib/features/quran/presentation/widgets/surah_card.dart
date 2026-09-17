@@ -80,7 +80,7 @@ class SurahCard extends StatelessWidget {
                       tag: 'surah_latin_${surah.nomor}',
                       child: Material(
                         color: Colors.transparent,
-                        child: Text(surah.namaLatin, style: TextStyle(color: context.backgroundColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                        child: Text(surah.namaLatin, style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
                     SizedBox(height: 4),
@@ -92,7 +92,7 @@ class SurahCard extends StatelessWidget {
                 tag: 'surah_arab_${surah.nomor}',
                 child: Material(
                   color: Colors.transparent,
-                  child: Text(surah.nama, style: GoogleFonts.amiri(color: context.backgroundColor, fontSize: 22, fontWeight: FontWeight.bold)),
+                  child: Text(surah.nama, style: GoogleFonts.amiri(color: context.textPrimaryColor, fontSize: 22, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

@@ -19,7 +19,7 @@ class DoaScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.close, color: context.backgroundColor, size: 30),
+          icon: Icon(Icons.close, color: context.textPrimaryColor, size: 30),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -32,7 +32,7 @@ class DoaScreen extends StatelessWidget {
                 Icon(
                   Icons.mosque,
                   size: 80,
-                  color: context.backgroundColor,
+                  color: context.textPrimaryColor,
                 )
                     .animate(onPlay: (controller) => controller.repeat(reverse: true))
                     .scaleXY(begin: 1.0, end: 1.1, duration: 2.seconds, curve: Curves.easeInOut),
@@ -42,7 +42,7 @@ class DoaScreen extends StatelessWidget {
                   style: GoogleFonts.amiri(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: context.backgroundColor,
+                    color: context.textPrimaryColor,
                   ),
                   textAlign: TextAlign.center,
                 ).animate().fade(duration: 800.ms).slideY(begin: -0.2, end: 0),
@@ -55,7 +55,7 @@ class DoaScreen extends StatelessWidget {
                       'اللّٰهُمَّ رَبَّ هٰذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ، آتِ سَيِّدَنَا مُحَمَّدًا الْوَسِيْلَةَ وَالْفَضِيْلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُوْدًا الَّذِيْ وَعَدْتَهُ',
                       style: GoogleFonts.amiri(
                         fontSize: 28,
-                        color: context.backgroundColor,
+                        color: context.textPrimaryColor,
                         height: 1.8,
                       ),
                       textAlign: TextAlign.center,
@@ -66,7 +66,7 @@ class DoaScreen extends StatelessWidget {
                       'Allaahumma rabba haadzihid da\'watit taammah, washshalaatil qaa-imah, aati sayyidanaa muhammadanil wasiilata wal fadhiilah, wab\'atshu maqaamam mahmuudanil ladzii wa\'adtah',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
-                        color: context.backgroundColor,
+                        color: context.textPrimaryColor,
                         fontStyle: FontStyle.italic,
                         height: 1.5,
                       ),

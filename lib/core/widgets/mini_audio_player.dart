@@ -75,7 +75,7 @@ class MiniAudioPlayer extends StatelessWidget {
                       Text(
                         'Surah ${quranAudio.currentSurah!.namaLatin}',
                         style: TextStyle(
-                          color: context.backgroundColor,
+                          color: context.textPrimaryColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -105,7 +105,7 @@ class MiniAudioPlayer extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       quranAudio.isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-                      color: context.backgroundColor,
+                      color: context.textPrimaryColor,
                       size: 32,
                     ),
                     onPressed: () {

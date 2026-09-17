@@ -44,12 +44,12 @@ class NextAdhanHeader extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.volume_up_rounded, color: context.backgroundColor, size: 28),
+                      icon: Icon(Icons.volume_up_rounded, color: context.textPrimaryColor, size: 28),
                       tooltip: 'Pengaturan Volume Global',
                       onPressed: onSettingsPressed,
                     ).animate().fade(delay: 200.ms).scale(),
                     IconButton(
-                      icon: Icon(Icons.settings, color: context.backgroundColor, size: 28),
+                      icon: Icon(Icons.settings, color: context.textPrimaryColor, size: 28),
                       tooltip: 'Pengaturan Aplikasi',
                       onPressed: () {
                         context.push('/settings');
@@ -65,7 +65,7 @@ class NextAdhanHeader extends StatelessWidget {
             timeString,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: context.backgroundColor,
+              color: context.textPrimaryColor,
               fontSize: 60,
               fontWeight: FontWeight.w900,
               letterSpacing: 2,
