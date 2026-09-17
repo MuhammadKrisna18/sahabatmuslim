@@ -1,22 +1,31 @@
 import 'package:flutter/foundation.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/ayah.dart';
-import 'package:adhan_reminder/core/services/storage_service.dart';
+import 'package:adhan_reminder/features/quran/domain/entities/bookmark.dart';
 import 'package:adhan_reminder/features/quran/domain/usecases/get_surahs_usecase.dart';
 import 'package:adhan_reminder/features/quran/domain/usecases/get_surah_detail_usecase.dart';
+import 'package:adhan_reminder/features/quran/domain/usecases/get_bookmark_usecase.dart';
+import 'package:adhan_reminder/features/quran/domain/usecases/save_bookmark_usecase.dart';
+import 'package:adhan_reminder/features/quran/domain/usecases/delete_bookmark_usecase.dart';
 
 class QuranProvider with ChangeNotifier {
   final GetSurahsUseCase _getSurahsUseCase;
   final GetSurahDetailUseCase _getSurahDetailUseCase;
-  final StorageService _storage;
+  final GetBookmarkUseCase _getBookmarkUseCase;
+  final SaveBookmarkUseCase _saveBookmarkUseCase;
+  final DeleteBookmarkUseCase _deleteBookmarkUseCase;
 
   QuranProvider({
     required GetSurahsUseCase getSurahsUseCase,
     required GetSurahDetailUseCase getSurahDetailUseCase,
-    required StorageService storageService,
+    required GetBookmarkUseCase getBookmarkUseCase,
+    required SaveBookmarkUseCase saveBookmarkUseCase,
+    required DeleteBookmarkUseCase deleteBookmarkUseCase,
   })  : _getSurahsUseCase = getSurahsUseCase,
         _getSurahDetailUseCase = getSurahDetailUseCase,
-        _storage = storageService;
+        _getBookmarkUseCase = getBookmarkUseCase,
+        _saveBookmarkUseCase = saveBookmarkUseCase,
+        _deleteBookmarkUseCase = deleteBookmarkUseCase;
 
   List<Surah> _surahList = [];
   List<Surah> get surahList => _surahList;
@@ -60,29 +69,41 @@ class QuranProvider with ChangeNotifier {
   }
 
   Future<void> loadBookmark() async {
-    String? bSurahNomorStr = _storage.getString('bookmarked_surah_nomor');
-    String? bSurahNamaStr = _storage.getString('bookmarked_surah_nama');
-    String? bAyahNomorStr = _storage.getString('bookmarked_ayah_nomor');
-
-    _bookmarkedSurahNomor = bSurahNomorStr != null ? int.parse(bSurahNomorStr) : null;
-    _bookmarkedSurahNama = bSurahNamaStr;
-    _bookmarkedAyahNomor = bAyahNomorStr != null ? int.parse(bAyahNomorStr) : null;
-    
+    final result = await _getBookmarkUseCase.execute();
+    result.fold(
+      (failure) {
+        _bookmarkedSurahNomor = null;
+        _bookmarkedSurahNama = null;
+        _bookmarkedAyahNomor = null;
+      },
+      (bookmark) {
+        if (bookmark != null) {
+          _bookmarkedSurahNomor = bookmark.surahNomor;
+          _bookmarkedSurahNama = bookmark.surahNama;
+          _bookmarkedAyahNomor = bookmark.ayahNomor;
+        } else {
+          _bookmarkedSurahNomor = null;
+          _bookmarkedSurahNama = null;
+          _bookmarkedAyahNomor = null;
+        }
+      },
+    );
     notifyListeners();
   }
 
   Future<void> saveBookmark(Surah surah, Ayah ayah) async {
     if (_bookmarkedAyahNomor == ayah.nomorAyat && _bookmarkedSurahNomor == surah.nomor) {
-      await _storage.remove('bookmarked_surah_nomor');
-      await _storage.remove('bookmarked_surah_nama');
-      await _storage.remove('bookmarked_ayah_nomor');
+      await _deleteBookmarkUseCase.execute();
       _bookmarkedSurahNomor = null;
       _bookmarkedSurahNama = null;
       _bookmarkedAyahNomor = null;
     } else {
-      await _storage.setString('bookmarked_surah_nomor', surah.nomor.toString());
-      await _storage.setString('bookmarked_surah_nama', surah.namaLatin);
-      await _storage.setString('bookmarked_ayah_nomor', ayah.nomorAyat.toString());
+      final bookmark = Bookmark(
+        surahNomor: surah.nomor,
+        surahNama: surah.namaLatin,
+        ayahNomor: ayah.nomorAyat,
+      );
+      await _saveBookmarkUseCase.execute(bookmark);
       _bookmarkedSurahNomor = surah.nomor;
       _bookmarkedSurahNama = surah.namaLatin;
       _bookmarkedAyahNomor = ayah.nomorAyat;
@@ -114,8 +135,6 @@ class QuranProvider with ChangeNotifier {
     _isLoadingAyahs = true;
     _errorAyahs = null;
     notifyListeners();
-
-
 
     final result = await _getSurahDetailUseCase.execute(surahNumber);
 

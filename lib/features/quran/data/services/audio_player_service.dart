@@ -16,16 +16,14 @@ class AudioPlayerService {
   final ValueNotifier<LoopModeState> customLoopModeNotifier = ValueNotifier(LoopModeState.sequential);
 
   Future<void> initAudioService() async {
-    if (audioHandler == null) {
-      audioHandler = await AudioService.init(
-        builder: () => QuranAudioHandler(this),
-        config: const AudioServiceConfig(
-          androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-          androidNotificationChannelName: 'Pemutaran Audio',
-          androidNotificationOngoing: true,
-        ),
-      );
-    }
+    audioHandler ??= await AudioService.init(
+      builder: () => QuranAudioHandler(this),
+      config: const AudioServiceConfig(
+        androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+        androidNotificationChannelName: 'Pemutaran Audio',
+        androidNotificationOngoing: true,
+      ),
+    );
   }
 
   Stream<PlayerState> get playerStateStream => audioPlayer.playerStateStream;

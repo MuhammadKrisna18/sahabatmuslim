@@ -1,69 +1,46 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
-import 'package:adhan_reminder/features/quran/data/models/surah_model.dart';
-
-class DownloadItem {
-  final Surah surah;
-  final String qoriId;
-  final String localPath;
-
-  DownloadItem({
-    required this.surah,
-    required this.qoriId,
-    required this.localPath,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'surah': SurahModel.fromEntity(surah).toJson(),
-        'qoriId': qoriId,
-        'localPath': localPath,
-      };
-
-  factory DownloadItem.fromJson(Map<String, dynamic> json) {
-    return DownloadItem(
-      surah: SurahModel.fromJson(json['surah']).toEntity(),
-      qoriId: json['qoriId'],
-      localPath: json['localPath'],
-    );
-  }
-}
+import 'package:adhan_reminder/features/quran/domain/entities/download_item.dart';
+import 'package:adhan_reminder/features/quran/domain/usecases/get_downloaded_audio_usecase.dart';
+import 'package:adhan_reminder/features/quran/domain/usecases/download_audio_usecase.dart';
+import 'package:adhan_reminder/features/quran/domain/usecases/delete_downloaded_audio_usecase.dart';
+import 'package:adhan_reminder/features/quran/domain/usecases/cancel_download_usecase.dart';
 
 class QuranDownloadProvider with ChangeNotifier {
-  final Dio _dio = Dio();
+  final GetDownloadedAudioUseCase _getDownloadedAudioUseCase;
+  final DownloadAudioUseCase _downloadAudioUseCase;
+  final DeleteDownloadedAudioUseCase _deleteDownloadedAudioUseCase;
+  final CancelDownloadUseCase _cancelDownloadUseCase;
+
   List<DownloadItem> _downloadedItems = [];
-
-
   final Map<String, double> _downloadProgress = {};
-
-
-  final Map<String, CancelToken> _cancelTokens = {};
+  final Map<String, StreamSubscription> _downloadSubscriptions = {};
 
   List<DownloadItem> get downloadedItems => _downloadedItems;
   Map<String, double> get downloadProgress => _downloadProgress;
 
-  QuranDownloadProvider() {
+  QuranDownloadProvider({
+    required GetDownloadedAudioUseCase getDownloadedAudioUseCase,
+    required DownloadAudioUseCase downloadAudioUseCase,
+    required DeleteDownloadedAudioUseCase deleteDownloadedAudioUseCase,
+    required CancelDownloadUseCase cancelDownloadUseCase,
+  })  : _getDownloadedAudioUseCase = getDownloadedAudioUseCase,
+        _downloadAudioUseCase = downloadAudioUseCase,
+        _deleteDownloadedAudioUseCase = deleteDownloadedAudioUseCase,
+        _cancelDownloadUseCase = cancelDownloadUseCase {
     _loadDownloadedItems();
   }
 
   Future<void> _loadDownloadedItems() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getString('downloaded_quran');
-    if (data != null) {
-      final List<dynamic> decoded = json.decode(data);
-      _downloadedItems = decoded.map((e) => DownloadItem.fromJson(e)).toList();
-      notifyListeners();
-    }
-  }
-
-  Future<void> _saveDownloadedItems() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = _downloadedItems.map((e) => e.toJson()).toList();
-    await prefs.setString('downloaded_quran', json.encode(data));
+    final result = await _getDownloadedAudioUseCase.execute();
+    result.fold(
+      (failure) {},
+      (items) {
+        _downloadedItems = items;
+        notifyListeners();
+      },
+    );
   }
 
   bool isDownloaded(int surahNomor, String qoriId) {
@@ -91,66 +68,43 @@ class QuranDownloadProvider with ChangeNotifier {
     if (isDownloaded(surah.nomor, qoriId) || isDownloading(surah.nomor, qoriId)) return;
 
     _downloadProgress[downloadKey] = 0.0;
-    _cancelTokens[downloadKey] = CancelToken();
     notifyListeners();
 
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final savePath = '${dir.path}/surah_${surah.nomor}_qori_$qoriId.mp3';
-
-      await _dio.download(
-        audioUrl,
-        savePath,
-        cancelToken: _cancelTokens[downloadKey],
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            _downloadProgress[downloadKey] = received / total;
-            notifyListeners();
-          }
-        },
-      );
-
-      _downloadProgress.remove(downloadKey);
-      _cancelTokens.remove(downloadKey);
-
-      _downloadedItems.add(DownloadItem(
-        surah: surah,
-        qoriId: qoriId,
-        localPath: savePath,
-      ));
-
-      await _saveDownloadedItems();
-      notifyListeners();
-    } catch (e) {
-      if (e is DioException && e.type == DioExceptionType.cancel) {
-        debugPrint('Download cancelled: $downloadKey');
-      }
-      _downloadProgress.remove(downloadKey);
-      _cancelTokens.remove(downloadKey);
-      notifyListeners();
-    }
+    final stream = _downloadAudioUseCase.execute(surah, qoriId, audioUrl);
+    
+    _downloadSubscriptions[downloadKey] = stream.listen(
+      (progress) {
+        if (progress >= 1.0) {
+          _downloadProgress.remove(downloadKey);
+          _downloadSubscriptions.remove(downloadKey);
+          _loadDownloadedItems(); // Refresh items
+        } else {
+          _downloadProgress[downloadKey] = progress;
+        }
+        notifyListeners();
+      },
+      onError: (error) {
+        _downloadProgress.remove(downloadKey);
+        _downloadSubscriptions.remove(downloadKey);
+        notifyListeners();
+      },
+      cancelOnError: true,
+    );
   }
 
   void cancelDownload(int surahNomor, String qoriId) {
     final downloadKey = '${surahNomor}_$qoriId';
-    if (_cancelTokens.containsKey(downloadKey)) {
-      _cancelTokens[downloadKey]?.cancel('Dibatalkan oleh pengguna');
-      _cancelTokens.remove(downloadKey);
+    if (_downloadProgress.containsKey(downloadKey)) {
+      _cancelDownloadUseCase.execute(surahNomor, qoriId);
+      _downloadSubscriptions[downloadKey]?.cancel();
+      _downloadSubscriptions.remove(downloadKey);
       _downloadProgress.remove(downloadKey);
       notifyListeners();
     }
   }
 
   Future<void> deleteDownload(int surahNomor, String qoriId) async {
-    final index = _downloadedItems.indexWhere((item) => item.surah.nomor == surahNomor && item.qoriId == qoriId);
-    if (index != -1) {
-      final file = File(_downloadedItems[index].localPath);
-      if (await file.exists()) {
-        await file.delete();
-      }
-      _downloadedItems.removeAt(index);
-      await _saveDownloadedItems();
-      notifyListeners();
-    }
+    await _deleteDownloadedAudioUseCase.execute(surahNomor, qoriId);
+    await _loadDownloadedItems();
   }
 }

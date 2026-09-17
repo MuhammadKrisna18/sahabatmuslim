@@ -8,13 +8,10 @@ import 'package:adhan_reminder/features/quran/presentation/providers/quran_downl
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_provider.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/ayah.dart';
-import 'package:adhan_reminder/core/widgets/glass_card.dart';
-import 'package:adhan_reminder/features/quran/presentation/widgets/ayah_card.dart';
-import 'package:adhan_reminder/features/settings/presentation/widgets/typography_settings_sheet.dart';
-import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:adhan_reminder/features/quran/presentation/widgets/surah_audio_player_bottom_bar.dart';
-import 'package:lottie/lottie.dart';
+import 'package:adhan_reminder/features/quran/presentation/widgets/ayah_card.dart';
+import 'package:adhan_reminder/features/settings/presentation/widgets/typography_settings_sheet.dart';
 import 'package:adhan_reminder/features/settings/presentation/providers/settings_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
@@ -426,7 +423,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                 Positioned.fill(
                   child: ScrollablePositionedList.builder(
                     itemScrollController: itemScrollController,
-                    itemCount: ayahList!.length + 1,
+                    itemCount: ayahList.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         return widget.surah.nomor != 1 && widget.surah.nomor != 9
@@ -443,7 +440,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                               )
                             : const SizedBox(height: 20);
                       }
-                      final ayah = ayahList![index - 1];
+                      final ayah = ayahList[index - 1];
                       return Consumer2<QuranAudioProvider, SettingsProvider>(
                         builder: (context, quranAudio, settings, _) {
                           return AyahCard(

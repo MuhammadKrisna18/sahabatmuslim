@@ -112,7 +112,7 @@ class QuranAudioProvider with ChangeNotifier {
         final nextSurah = surahList[nextIndex];
         final nextAyahs = _quranProvider.getAyahs(nextSurah.nomor);
         Future.delayed(const Duration(milliseconds: 500), () {
-          toggleAudio(nextSurah, null, ayahs: nextAyahs);
+          toggleAudio(nextSurah, ayahs: nextAyahs);
         });
       }
     } else if (state == LoopModeState.shuffle) {
@@ -120,7 +120,7 @@ class QuranAudioProvider with ChangeNotifier {
       final randomSurah = surahList[randomIndex];
       final randomAyahs = _quranProvider.getAyahs(randomSurah.nomor);
       Future.delayed(const Duration(milliseconds: 500), () {
-        toggleAudio(randomSurah, null, ayahs: randomAyahs);
+        toggleAudio(randomSurah, ayahs: randomAyahs);
       });
     }
   }
@@ -203,7 +203,7 @@ class QuranAudioProvider with ChangeNotifier {
           await _playlistManager.buildSingleSurahPlaylist(surah, _selectedQoriId);
         } else {
           // Play Per Ayat
-          await _playlistManager.buildAyahPlaylist(surah, ayahs!, _selectedQoriId);
+          await _playlistManager.buildAyahPlaylist(surah, ayahs, _selectedQoriId);
           
           final state = loopModeState;
           if (state == LoopModeState.repeatOne) {
