@@ -195,8 +195,9 @@ class QuranAudioProvider with ChangeNotifier {
         _isBuffering = true;
         notifyListeners();
 
-        // Cek apakah mode Ayah tersedia (Qori 01-06 memiliki audioUrls per ayat)
-        bool canPlayAyah = ayahs != null && ayahs.isNotEmpty && int.parse(_selectedQoriId) <= 6;
+        // Menonaktifkan mode per-ayat untuk Qori 05 (Mishary Rashid) sesuai permintaan, 
+        // sehingga semua (05, 07, 09) memutar full surah.
+        bool canPlayAyah = false;
         
         // Jika tidak mendukung per-ayat, putar full surah
         if (!canPlayAyah) {
