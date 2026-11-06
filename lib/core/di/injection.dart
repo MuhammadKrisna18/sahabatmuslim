@@ -45,6 +45,7 @@ import 'package:adhan_reminder/features/quran/presentation/providers/quran_downl
 
 import 'package:adhan_reminder/core/services/notification_service.dart';
 import 'package:adhan_reminder/core/services/alarm_service.dart';
+import 'package:adhan_reminder/core/services/update_service.dart';
 import 'package:adhan_reminder/features/quran/data/services/audio_player_service.dart';
 import 'package:adhan_reminder/core/services/storage_service.dart';
 import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
@@ -65,6 +66,7 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<NotificationService>(() => NotificationService());
   getIt.registerLazySingleton<AlarmService>(() => AlarmService());
   getIt.registerLazySingleton<AudioPlayerService>(() => AudioPlayerService());
+  getIt.registerLazySingleton<UpdateService>(() => UpdateService());
 
   // Data Sources
   getIt.registerLazySingleton<BookmarkLocalDataSource>(

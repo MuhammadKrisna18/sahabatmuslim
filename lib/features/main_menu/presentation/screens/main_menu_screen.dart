@@ -1,6 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+import 'package:adhan_reminder/core/di/injection.dart';
+import 'package:adhan_reminder/core/services/update_service.dart';
+import 'package:adhan_reminder/core/widgets/update_dialog.dart';
 import 'package:adhan_reminder/features/adhan/presentation/screens/home_screen.dart';
 import 'package:adhan_reminder/features/doa/presentation/screens/doa_list_screen.dart';
 import 'package:adhan_reminder/features/qibla/presentation/screens/qibla_screen.dart';
@@ -19,6 +22,26 @@ class MainMenuScreen extends StatefulWidget {
 
 class _MainMenuScreenState extends State<MainMenuScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForUpdate();
+    });
+  }
+
+  Future<void> _checkForUpdate() async {
+    final updateService = getIt<UpdateService>();
+    final updateInfo = await updateService.checkForUpdate();
+    if (mounted && updateInfo != null && updateInfo.hasUpdate) {
+      UpdateDialog.show(
+        context,
+        updateInfo: updateInfo,
+        updateService: updateService,
+      );
+    }
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),
