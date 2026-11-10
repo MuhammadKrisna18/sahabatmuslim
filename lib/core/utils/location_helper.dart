@@ -29,9 +29,17 @@ class LocationHelper {
     }
 
     try {
-      return await Geolocator.getCurrentPosition();
+      return await Geolocator.getCurrentPosition(
+        timeLimit: const Duration(seconds: 10),
+      );
     } catch (e) {
-      throw LocationException('Gagal mendapatkan koordinat lokasi.');
+      try {
+        final lastKnown = await Geolocator.getLastKnownPosition();
+        if (lastKnown != null) {
+          return lastKnown;
+        }
+      } catch (_) {}
+      throw LocationException('Gagal mendapatkan koordinat lokasi. Pastikan sinyal GPS memadai.');
     }
   }
 }

@@ -142,16 +142,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return DynamicScaffold(
       body: Consumer<AdhanProvider>(
         builder: (context, adhanProvider, child) {
-          final String timeString =
-              "${adhanProvider.currentTime.hour.toString().padLeft(2, '0')}:${adhanProvider.currentTime.minute.toString().padLeft(2, '0')}:${adhanProvider.currentTime.second.toString().padLeft(2, '0')}";
-
           return Column(
             children: [
-              NextAdhanHeader(
-                timeString: timeString,
-                nextAdhanText: adhanProvider.getNextAdhanText(),
-                isDark: isDark,
-                onSettingsPressed: () => _showGlobalVolumeSettings(context, adhanProvider),
+              ValueListenableBuilder<DateTime>(
+                valueListenable: adhanProvider.currentTimeNotifier,
+                builder: (context, currentTime, _) {
+                  final String timeString =
+                      "${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}:${currentTime.second.toString().padLeft(2, '0')}";
+                  return NextAdhanHeader(
+                    timeString: timeString,
+                    nextAdhanText: adhanProvider.getNextAdhanText(),
+                    isDark: isDark,
+                    onSettingsPressed: () => _showGlobalVolumeSettings(context, adhanProvider),
+                  );
+                },
               ),
               const SizedBox(height: 10),
               child!,

@@ -87,11 +87,12 @@ class QuranDownloadRepositoryImpl implements QuranDownloadRepository {
             },
           );
 
-          // Finished successfully, add to shared preferences
+          // Finished successfully, add to shared preferences (avoid duplicates)
           final itemsResult = await getDownloadedItems();
           itemsResult.fold(
             (failure) {},
             (items) async {
+              items.removeWhere((item) => item.surah.nomor == surah.nomor && item.qoriId == qoriId);
               items.add(DownloadItem(
                 surah: surah,
                 qoriId: qoriId,
@@ -104,6 +105,15 @@ class QuranDownloadRepositoryImpl implements QuranDownloadRepository {
           controller.add(1.0); // complete
           await controller.close();
         } catch (e) {
+          try {
+            final dir = await getApplicationDocumentsDirectory();
+            final savePath = '${dir.path}/surah_${surah.nomor}_qori_$qoriId.mp3';
+            final file = File(savePath);
+            if (await file.exists()) {
+              await file.delete();
+            }
+          } catch (_) {}
+
           if (e is DioException && e.type == DioExceptionType.cancel) {
             controller.addError('cancelled');
           } else {

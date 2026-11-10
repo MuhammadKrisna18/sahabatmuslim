@@ -20,7 +20,7 @@ class AudioPlayerService {
     audioHandler ??= await AudioService.init(
       builder: () => QuranAudioHandler(this),
       config: const AudioServiceConfig(
-        androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+        androidNotificationChannelId: 'com.example.adhan_reminder.audio',
         androidNotificationChannelName: 'Pemutaran Audio',
         androidNotificationOngoing: true,
       ),
@@ -86,7 +86,7 @@ class AudioPlayerService {
         break;
       case LoopModeState.sequential:
         nextState = LoopModeState.repeatOne;
-        await setLoopMode(LoopMode.all); 
+        await setLoopMode(LoopMode.one); 
         break;
       case LoopModeState.repeatOne:
         nextState = LoopModeState.shuffle;

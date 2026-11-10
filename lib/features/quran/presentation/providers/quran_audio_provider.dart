@@ -96,9 +96,13 @@ class QuranAudioProvider with ChangeNotifier {
       notifyListeners();
     });
 
+    int lastPositionSec = -1;
     _audioPlayerService.positionStream.listen((p) {
       _position = p;
-      notifyListeners();
+      if (p.inSeconds != lastPositionSec) {
+        lastPositionSec = p.inSeconds;
+        notifyListeners();
+      }
     });
 
     _audioPlayerService.currentIndexStream.listen((index) {
@@ -126,6 +130,14 @@ class QuranAudioProvider with ChangeNotifier {
       return; 
     }
     
+    if (state == LoopModeState.repeatOne) {
+      Future.delayed(const Duration(milliseconds: 300), () async {
+        await _audioPlayerService.seek(Duration.zero);
+        await _audioPlayerService.play();
+      });
+      return;
+    }
+
     final surahList = _quranProvider.surahList;
     if (surahList.isEmpty || _currentSurah == null) return;
 

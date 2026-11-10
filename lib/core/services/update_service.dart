@@ -5,6 +5,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:adhan_reminder/core/constants/api_constants.dart';
 
 class UpdateInfo {
   final String latestVersion;
@@ -28,8 +29,8 @@ class UpdateInfo {
 
 class UpdateService {
   final Dio _dio = Dio();
-  static const String _repoOwner = 'MuhammadKrisna18';
-  static const String _repoName = 'sahabatmuslim';
+  static const String _repoOwner = ApiConstants.githubRepoOwner;
+  static const String _repoName = ApiConstants.githubRepoName;
 
   Future<String> getCurrentVersion() async {
     try {

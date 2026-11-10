@@ -20,11 +20,15 @@ class BookmarkLocalDataSourceImpl implements BookmarkLocalDataSource {
     String? ayahNomorStr = _storageService.getString('bookmarked_ayah_nomor');
 
     if (surahNomorStr != null && surahNamaStr != null && ayahNomorStr != null) {
-      return Bookmark(
-        surahNomor: int.parse(surahNomorStr),
-        surahNama: surahNamaStr,
-        ayahNomor: int.parse(ayahNomorStr),
-      );
+      final sNomor = int.tryParse(surahNomorStr);
+      final aNomor = int.tryParse(ayahNomorStr);
+      if (sNomor != null && aNomor != null) {
+        return Bookmark(
+          surahNomor: sNomor,
+          surahNama: surahNamaStr,
+          ayahNomor: aNomor,
+        );
+      }
     }
     return null;
   }

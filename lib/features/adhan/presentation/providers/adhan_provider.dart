@@ -27,6 +27,7 @@ class AdhanProvider with ChangeNotifier {
   List<AdhanSchedule> _schedules = [];
   Timer? _clockTimer;
   DateTime _currentTime = DateTime.now();
+  final ValueNotifier<DateTime> currentTimeNotifier = ValueNotifier<DateTime>(DateTime.now());
   String _locationName = '';
   double _globalVolume = 1.0;
   String? _errorMessage;
@@ -48,6 +49,7 @@ class AdhanProvider with ChangeNotifier {
   @override
   void dispose() {
     _clockTimer?.cancel();
+    currentTimeNotifier.dispose();
     super.dispose();
   }
 
@@ -151,8 +153,13 @@ class AdhanProvider with ChangeNotifier {
 
   void _startClock() {
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _currentTime = DateTime.now();
-      notifyListeners();
+      final now = DateTime.now();
+      final minuteChanged = now.minute != _currentTime.minute || now.hour != _currentTime.hour;
+      _currentTime = now;
+      currentTimeNotifier.value = now;
+      if (minuteChanged) {
+        notifyListeners();
+      }
     });
   }
 
@@ -185,17 +192,15 @@ class AdhanProvider with ChangeNotifier {
         alarmTime = alarmTime.add(const Duration(days: 1));
       }
 
-      if (schedule.id.toLowerCase() == 'dzuhur' && alarmTime.weekday == DateTime.friday) {
-        await _alarmService.stopAlarm(alarmId);
-        continue;
-      }
+      final isFridayDzuhur = schedule.id.toLowerCase() == 'dzuhur' && alarmTime.weekday == DateTime.friday;
+      final displayName = isFridayDzuhur ? "Jum'at" : schedule.id;
 
       await _alarmService.scheduleAdhan(
         id: alarmId,
         dateTime: alarmTime,
         audioPath: schedule.soundUrl,
         volume: _globalVolume,
-        title: 'Waktunya Adzan ${schedule.id}!',
+        title: 'Waktunya Adzan $displayName!',
         body: 'Jadwal sholat pada ${schedule.formattedTime} telah tiba.',
       );
     }
@@ -252,9 +257,6 @@ class AdhanProvider with ChangeNotifier {
     final nowMinutes = _currentTime.hour * 60 + _currentTime.minute;
 
     for (var schedule in _schedules) {
-      if (schedule.id.toLowerCase() == 'dzuhur' && _currentTime.weekday == DateTime.friday) {
-        continue;
-      }
       final sMinutes = schedule.hour * 60 + schedule.minute;
       if (sMinutes > nowMinutes) {
         return schedule;

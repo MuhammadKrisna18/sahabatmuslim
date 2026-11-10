@@ -9,6 +9,8 @@ import 'package:adhan_reminder/features/adhan/presentation/screens/doa_screen.da
 import 'package:adhan_reminder/features/adhan/presentation/screens/add_schedule_screen.dart';
 import 'package:adhan_reminder/features/adhan/domain/entities/adhan_schedule.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
+import 'package:adhan_reminder/core/di/injection.dart';
+import 'package:adhan_reminder/features/quran/presentation/providers/quran_provider.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -34,8 +36,29 @@ class AppRouter {
         name: 'surah_detail',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
+          Surah? surah = extra?['surah'] as Surah?;
+          final idParam = state.pathParameters['id'];
+
+          if (surah == null && idParam != null) {
+            final surahNumber = int.tryParse(idParam);
+            final quranProvider = getIt<QuranProvider>();
+            if (surahNumber != null && quranProvider.surahList.isNotEmpty) {
+              final found = quranProvider.surahList.where((s) => s.nomor == surahNumber);
+              if (found.isNotEmpty) {
+                surah = found.first;
+              }
+            }
+          }
+
+          if (surah == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('SahabatMuslim')),
+              body: const Center(child: Text('Surah tidak ditemukan.')),
+            );
+          }
+
           return SurahDetailScreen(
-            surah: extra?['surah'] as Surah,
+            surah: surah,
             initialAyah: extra?['initialAyah'] as int?,
             allSurahs: extra?['allSurahs'] as List<Surah>?,
           );

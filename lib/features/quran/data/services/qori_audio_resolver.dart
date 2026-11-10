@@ -1,3 +1,4 @@
+import 'package:adhan_reminder/core/constants/api_constants.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 
 class QoriAudioResolver {
@@ -12,10 +13,11 @@ class QoriAudioResolver {
   }
 
   static String? getAudioUrl(Surah surah, String qoriId) {
+    final paddedNumber = surah.nomor.toString().padLeft(3, '0');
     if (qoriId == '07') {
-      return 'https://server7.mp3quran.net/s_gmd/${surah.nomor.toString().padLeft(3, '0')}.mp3';
+      return '${ApiConstants.mp3QuranBaseUrl}/$paddedNumber.mp3';
     } else if (qoriId == '09') {
-      return 'https://archive.org/download/AlaaAql/${surah.nomor.toString().padLeft(3, '0')}.mp3';
+      return '${ApiConstants.archiveOrgBaseUrl}/$paddedNumber.mp3';
     } else {
       String? url = surah.audioUrls[qoriId];
       if (url == null && surah.audioUrls.isNotEmpty) {

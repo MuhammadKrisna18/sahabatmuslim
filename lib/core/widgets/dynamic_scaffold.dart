@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:adhan_reminder/core/theme/theme_ext.dart';
-import 'package:adhan_reminder/core/utils/theme_utils.dart';
-import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 
 class DynamicScaffold extends StatelessWidget {
   final Widget body;
@@ -22,10 +19,6 @@ class DynamicScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-    final adhanProvider = context.watch<AdhanProvider>();
-
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       decoration: BoxDecoration(
