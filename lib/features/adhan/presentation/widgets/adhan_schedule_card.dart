@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:adhan_reminder/features/adhan/domain/entities/adhan_schedule.dart';
@@ -135,7 +136,7 @@ class AdhanScheduleCard extends StatelessWidget {
         ),
       ),
     ).animate()
-     .fade(delay: (100 * index).ms, duration: 600.ms)
+     .fade(delay: (min(index, 5) * 80).ms, duration: 500.ms)
      .slideX(begin: 0.1, end: 0, curve: Curves.easeOut);
   }
 }

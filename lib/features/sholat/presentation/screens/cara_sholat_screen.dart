@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -218,7 +219,7 @@ class _CaraSholatScreenState extends State<CaraSholatScreen> {
                           ),
                         ),
                       ),
-                    ).animate().fade(delay: (index * 100).ms).slideX(begin: 0.1, end: 0);
+                    ).animate().fade(delay: (min(index, 6) * 60).ms).slideX(begin: 0.1, end: 0);
                   },
                 );
               },

@@ -135,7 +135,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                               SizedBox(height: 16),
                               Text(error, textAlign: TextAlign.center, style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                               SizedBox(height: 8),
-                              Text('Pastikan koneksi internet Anda aktif.', textAlign: TextAlign.center, style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
+                              Text('Gagal memuat data Al-Qur\'an lokal.', textAlign: TextAlign.center, style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
                               const SizedBox(height: 16),
                               ElevatedButton.icon(
                                 onPressed: () => quranProvider.loadSurahs(),
