@@ -67,8 +67,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
                           icon: const Icon(Icons.refresh),
                           label: const Text('Coba Lagi'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary.withOpacity(0.3),
-                            foregroundColor: context.backgroundColor,
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
                           ),
                         ),
                       ),

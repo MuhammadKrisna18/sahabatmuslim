@@ -54,7 +54,7 @@ class AlarmDialog extends StatelessWidget {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
-            foregroundColor: context.backgroundColor,
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             elevation: 5,

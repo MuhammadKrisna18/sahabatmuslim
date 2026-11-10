@@ -60,18 +60,19 @@ class _CaraSholatScreenState extends State<CaraSholatScreen> {
         child: Consumer<SholatProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading && provider.caraSholatList.isEmpty) {
+              final isDark = context.isDarkMode;
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: 5,
                 itemBuilder: (context, index) {
                   return Shimmer.fromColors(
-                    baseColor: context.backgroundColor.withOpacity(0.1),
-                    highlightColor: context.backgroundColor.withOpacity(0.3),
+                    baseColor: isDark ? const Color(0xFF1E293B) : Colors.grey[300]!,
+                    highlightColor: isDark ? const Color(0xFF334155) : Colors.grey[100]!,
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       height: 100,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),

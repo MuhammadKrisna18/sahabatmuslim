@@ -433,8 +433,8 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               if (isLoading)
                 Center(
                   child: Shimmer.fromColors(
-                    baseColor: context.backgroundColor.withOpacity(0.3),
-                    highlightColor: context.backgroundColor,
+                    baseColor: context.isDarkMode ? const Color(0xFF1E293B) : Colors.grey[300]!,
+                    highlightColor: context.isDarkMode ? const Color(0xFF334155) : Colors.grey[100]!,
                     child: Text(
                       'اللّٰه',
                       style: GoogleFonts.amiri(
