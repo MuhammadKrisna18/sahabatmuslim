@@ -22,8 +22,9 @@ class NextAdhanHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
     return Container(
-      padding: const EdgeInsets.only(top: 60, left: 16, right: 16, bottom: 20),
+      padding: EdgeInsets.only(top: topPadding + 16, left: 16, right: 16, bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

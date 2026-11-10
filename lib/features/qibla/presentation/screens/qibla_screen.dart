@@ -134,10 +134,13 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       return Center(
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.only(
+                            top: 20,
+                            bottom: MediaQuery.of(context).padding.bottom + 140,
+                          ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const SizedBox(height: 20),
                               Text(
                                 'Arah Kiblat: ${qiblaProvider.qiblaDirection!.toStringAsFixed(1)}°',
                                 style: TextStyle(
