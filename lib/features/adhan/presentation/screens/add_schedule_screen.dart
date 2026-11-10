@@ -279,7 +279,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                leading: Icon(Icons.access_time_filled, size: 40, color: AppColors.primary),
+                leading: const Icon(Icons.access_time_filled, size: 40, color: AppColors.primary),
                 title: Text(
                   'Waktu Adzan ${widget.existingSchedule.id}',
                   style: TextStyle(color: context.textSecondaryColor, fontSize: 16),
@@ -323,7 +323,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                       child: DropdownButton<String>(
                         dropdownColor: context.backgroundColor,
                         value: _selectedSoundName,
-                        hint: Text('Pilih Suara', style: TextStyle(color: Color(0xFF94A3B8))),
+                        hint: const Text('Pilih Suara', style: TextStyle(color: Color(0xFF94A3B8))),
                         icon: Icon(Icons.arrow_drop_down, color: context.textSecondaryColor),
                         style: TextStyle(color: context.textPrimaryColor, fontSize: 16),
                         isExpanded: true,
@@ -392,7 +392,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     if (_customSoundPath != null)
                       TextField(
                         controller: _customNameController,

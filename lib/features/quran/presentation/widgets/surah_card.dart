@@ -150,7 +150,7 @@ class SurahCard extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +162,7 @@ class SurahCard extends StatelessWidget {
                         child: Text(surah.namaLatin, style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text('${surah.tempatTurun} • ${surah.jumlahAyat} Ayat', style: TextStyle(color: context.textSecondaryColor, fontSize: 12)),
                   ],
                 ),

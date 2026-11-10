@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:adhan_reminder/features/quran/domain/entities/surah.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_audio_provider.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
@@ -77,7 +76,7 @@ class SurahAudioPlayerBottomBar extends StatelessWidget {
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.skip_next, color: AppColors.primary),
+                      icon: const Icon(Icons.skip_next, color: AppColors.primary),
                       onPressed: () => quranAudio.seek(quranAudio.duration),
                     ),
                     IconButton(

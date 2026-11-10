@@ -123,14 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _navigateToAddSchedule({required AdhanSchedule schedule, required AdhanProvider adhanProvider}) async {
-    final newSchedule = await context.push<AdhanSchedule>('/edit-schedule', extra: schedule);
-
-    if (newSchedule != null) {
-      adhanProvider.updateSchedule(newSchedule);
-    }
-  }
-
   void _showGlobalVolumeSettings(BuildContext context, AdhanProvider provider) {
     GlobalVolumeSettingsSheet.show(context, provider);
   }
@@ -201,7 +193,7 @@ class _ScheduleListSection extends StatelessWidget {
               if (errorMessage != null)
                 Container(
                   margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.2),
                     border: Border.all(color: Colors.red.withOpacity(0.5)),
@@ -210,7 +202,7 @@ class _ScheduleListSection extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(Icons.location_off, color: context.textPrimaryColor, size: 24),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           errorMessage,
@@ -223,7 +215,7 @@ class _ScheduleListSection extends StatelessWidget {
               const SizedBox(height: 20),
               if (schedules.isEmpty)
                 Padding(
-                  padding: EdgeInsets.only(top: 50),
+                  padding: const EdgeInsets.only(top: 50),
                   child: Text(
                     'Belum ada jadwal adzan.\nTekan pengaturan untuk menambahkan.',
                     textAlign: TextAlign.center,
@@ -232,7 +224,7 @@ class _ScheduleListSection extends StatelessWidget {
                 )
               else ...[
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(

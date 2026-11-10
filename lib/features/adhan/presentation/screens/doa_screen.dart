@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:adhan_reminder/core/widgets/glass_card.dart';
-import 'package:adhan_reminder/core/utils/theme_utils.dart';
-import 'package:provider/provider.dart';
-import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
 import 'package:adhan_reminder/core/theme/theme_ext.dart';
 
 class DoaScreen extends StatelessWidget {
-  DoaScreen({super.key});
+  const DoaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

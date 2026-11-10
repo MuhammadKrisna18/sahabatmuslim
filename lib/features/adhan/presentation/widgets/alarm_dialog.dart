@@ -41,7 +41,7 @@ class AlarmDialog extends StatelessWidget {
               .scaleXY(begin: 0.95, end: 1.05, duration: 1000.ms, curve: Curves.easeInOut)
               .then()
               .scaleXY(begin: 1.05, end: 0.95, duration: 1000.ms, curve: Curves.easeInOut),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             'Jadwal sholat ${schedule.id} (${schedule.formattedTime}) telah tiba.',
             textAlign: TextAlign.center,

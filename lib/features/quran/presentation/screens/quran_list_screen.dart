@@ -88,7 +88,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                           child: TextField(
                             controller: _searchController,
                             style: TextStyle(color: context.textPrimaryColor),
@@ -96,7 +96,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                             decoration: InputDecoration(
                               hintText: 'Cari surah (contoh: Al-Fatihah)',
                               hintStyle: TextStyle(color: context.textSecondaryColor),
-                              prefixIcon: Icon(Icons.search, color: AppColors.primary),
+                              prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                               suffixIcon: quranProvider.searchQuery.isNotEmpty
                                   ? IconButton(
                                       icon: Icon(Icons.clear, color: context.textSecondaryColor),
@@ -132,9 +132,9 @@ class _QuranListScreenState extends State<QuranListScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.error_outline, color: context.textSecondaryColor, size: 48),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Text(error, textAlign: TextAlign.center, style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text('Gagal memuat data Al-Qur\'an lokal.', textAlign: TextAlign.center, style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
                               const SizedBox(height: 16),
                               ElevatedButton.icon(

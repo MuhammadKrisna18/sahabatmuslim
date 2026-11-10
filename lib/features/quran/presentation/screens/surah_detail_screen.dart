@@ -369,7 +369,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                       if (audioUrl != null) {
                         downloadProvider.downloadSurah(widget.surah, qoriId, audioUrl);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Mengunduh audio...')),
+                          const SnackBar(content: Text('Mengunduh audio...')),
                         );
                       }
                     },

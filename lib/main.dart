@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 import 'package:adhan_reminder/features/quran/presentation/providers/quran_audio_provider.dart';
@@ -14,7 +13,6 @@ import 'package:adhan_reminder/core/di/injection.dart';
 import 'package:adhan_reminder/core/services/notification_service.dart';
 import 'package:adhan_reminder/core/services/alarm_service.dart';
 import 'package:adhan_reminder/core/theme/app_theme.dart';
-import 'package:adhan_reminder/core/constants/app_colors.dart';
 import 'package:adhan_reminder/core/constants/app_strings.dart';
 import 'package:adhan_reminder/core/routes/app_router.dart';
 import 'package:adhan_reminder/features/quran/data/services/audio_player_service.dart';

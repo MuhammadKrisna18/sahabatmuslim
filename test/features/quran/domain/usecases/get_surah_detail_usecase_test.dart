@@ -17,7 +17,7 @@ void main() {
     usecase = GetSurahDetailUseCase(mockQuranRepository);
   });
 
-  final tNomor = 1;
+  const tNomor = 1;
   final tAyah = Ayah(
     nomorAyat: 1,
     teksArab: 'بسم الله',

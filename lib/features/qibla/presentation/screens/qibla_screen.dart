@@ -50,7 +50,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       const SizedBox(height: 200),
                       Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Text(
                             qiblaProvider.errorMessage.isEmpty 
                               ? 'Mohon izinkan akses lokasi\nuntuk menentukan arah Kiblat.' 
@@ -81,7 +81,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                         return ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           children: [
-                            SizedBox(height: 200),
+                            const SizedBox(height: 200),
                             Center(
                               child: Text(
                                 'Error membaca sensor kompas:\n${snapshot.error}', 
@@ -100,9 +100,9 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       double? heading = snapshot.data?.heading;
                       if (heading == null) {
                         return ListView(
-                          physics: AlwaysScrollableScrollPhysics(),
+                          physics: const AlwaysScrollableScrollPhysics(),
                           children: [
-                            SizedBox(height: 200),
+                            const SizedBox(height: 200),
                             Center(
                               child: Text(
                                 'Sensor kompas tidak ditemukan di perangkat ini.', 
@@ -194,7 +194,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: [
-                                              Positioned(top: 10, child: Text('U', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20))),
+                                              const Positioned(top: 10, child: Text('U', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20))),
                                               Positioned(bottom: 10, child: Text('S', style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 20))),
                                               Positioned(right: 10, child: Text('T', style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 20))),
                                               Positioned(left: 10, child: Text('B', style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 20))),

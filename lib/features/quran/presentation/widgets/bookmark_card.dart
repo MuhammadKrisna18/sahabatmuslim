@@ -49,20 +49,20 @@ class BookmarkCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(Icons.menu_book, color: context.textPrimaryColor, size: 24),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Terakhir Dibaca', style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text('Surah $bookmarkedSurahNama', style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                       Text('Ayat $bookmarkedAyahNomor', style: TextStyle(color: context.textPrimaryColor, fontSize: 13)),
                     ],

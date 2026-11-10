@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:adhan_reminder/core/utils/theme_utils.dart';
-import 'package:provider/provider.dart';
-import 'package:adhan_reminder/features/adhan/presentation/providers/adhan_provider.dart';
 import 'package:adhan_reminder/core/widgets/dynamic_scaffold.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
 

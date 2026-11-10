@@ -8,13 +8,4 @@ class ThemeUtils {
       color: Colors.white,
     );
   }
-
-  static int _getMinutes(List<AdhanSchedule> schedules, String id, int defaultMins) {
-    try {
-      final schedule = schedules.firstWhere((s) => s.id == id);
-      return schedule.hour * 60 + schedule.minute;
-    } catch (e) {
-      return defaultMins;
-    }
-  }
 }
