@@ -132,8 +132,16 @@ class UpdateService {
     CancelToken? cancelToken,
   }) async {
     try {
-      final dir = await getTemporaryDirectory();
-      final filePath = '${dir.path}/$fileName';
+      Directory? targetDir;
+      try {
+        final extDirs = await getExternalCacheDirectories();
+        if (extDirs != null && extDirs.isNotEmpty) {
+          targetDir = extDirs.first;
+        }
+      } catch (_) {}
+      targetDir ??= await getTemporaryDirectory();
+
+      final filePath = '${targetDir.path}/$fileName';
 
       final file = File(filePath);
       if (await file.exists()) {
