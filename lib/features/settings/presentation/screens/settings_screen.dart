@@ -4,6 +4,8 @@ import 'package:adhan_reminder/core/di/injection.dart';
 import 'package:adhan_reminder/core/services/update_service.dart';
 import 'package:adhan_reminder/core/widgets/update_dialog.dart';
 import 'package:adhan_reminder/features/settings/presentation/providers/settings_provider.dart';
+import 'package:adhan_reminder/features/settings/presentation/widgets/font_size_stepper.dart';
+import 'package:adhan_reminder/features/settings/presentation/widgets/typography_preview_card.dart';
 import 'package:adhan_reminder/core/constants/app_colors.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -134,31 +136,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 10),
-              ListTile(
-                title: const Text('Teks Arab'),
-                subtitle: Slider(
-                  value: provider.arabicFontSize,
-                  min: 20.0,
-                  max: 60.0,
-                  divisions: 8,
-                  label: provider.arabicFontSize.round().toString(),
-                  onChanged: (value) => provider.setArabicFontSize(value),
-                  activeColor: AppColors.primary,
-                ),
+              const SizedBox(height: 12),
+              TypographyPreviewCard(
+                arabicFontSize: provider.arabicFontSize,
+                latinFontSize: provider.latinFontSize,
               ),
-              ListTile(
-                title: const Text('Teks Latin/Terjemahan'),
-                subtitle: Slider(
-                  value: provider.latinFontSize,
-                  min: 10.0,
-                  max: 24.0,
-                  divisions: 7,
-                  label: provider.latinFontSize.round().toString(),
-                  onChanged: (value) => provider.setLatinFontSize(value),
-                  activeColor: AppColors.primary,
-                ),
+              const SizedBox(height: 8),
+              FontSizeStepper(
+                title: 'Teks Arab',
+                currentSize: provider.arabicFontSize,
+                minSize: SettingsProvider.minArabicFontSize,
+                maxSize: SettingsProvider.maxArabicFontSize,
+                onDecrease: () => provider.decreaseArabicFontSize(),
+                onIncrease: () => provider.increaseArabicFontSize(),
               ),
+              FontSizeStepper(
+                title: 'Teks Latin & Terjemahan',
+                currentSize: provider.latinFontSize,
+                minSize: SettingsProvider.minLatinFontSize,
+                maxSize: SettingsProvider.maxLatinFontSize,
+                onDecrease: () => provider.decreaseLatinFontSize(),
+                onIncrease: () => provider.increaseLatinFontSize(),
+              ),
+              const SizedBox(height: 8),
               const Divider(),
               const SizedBox(height: 10),
               const Text(
