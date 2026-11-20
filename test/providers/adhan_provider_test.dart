@@ -41,7 +41,7 @@ void main() {
 
     when(() => mockScheduleRepository.getLocationName()).thenAnswer((_) async => const Right('Test Location'));
     when(() => mockScheduleRepository.saveLocationName(any())).thenAnswer((_) async => const Right(null));
-    when(() => mockScheduleRepository.getGlobalVolume()).thenAnswer((_) async => const Right(1.0));
+    when(() => mockScheduleRepository.getGlobalVolume()).thenAnswer((_) async => const Right(0.4));
     when(() => mockScheduleRepository.saveGlobalVolume(any())).thenAnswer((_) async => const Right(null));
     when(() => mockScheduleRepository.getSchedules()).thenAnswer((_) async => Right(defaultSchedules));
     when(() => mockScheduleRepository.saveSchedules(any())).thenAnswer((_) async => const Right(null));
@@ -75,7 +75,7 @@ void main() {
     expect(provider.schedules.length, 5);
     expect(provider.schedules[0].id, 'Subuh');
     expect(provider.schedules[1].id, 'Dzuhur');
-    expect(provider.globalVolume, 1.0);
+    expect(provider.globalVolume, 0.4);
   });
 
   test('setGlobalVolume updates volume and calls saveGlobalVolume', () async {

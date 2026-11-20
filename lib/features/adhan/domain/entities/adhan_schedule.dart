@@ -16,7 +16,7 @@ class AdhanSchedule {
     required this.soundUrl,
     this.isLocal = false,
     this.isActive = true,
-    this.volume = 1.0,
+    this.volume = 0.4,
   });
 
   AdhanSchedule copyWith({

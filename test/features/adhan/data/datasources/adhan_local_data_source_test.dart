@@ -46,12 +46,12 @@ void main() {
   });
 
   group('volume and location caching', () {
-    test('getCachedGlobalVolume returns 1.0 when unset or invalid', () async {
+    test('getCachedGlobalVolume returns 0.4 when unset or invalid', () async {
       when(() => mockStorageService.getString('globalVolume')).thenReturn(null);
 
       final volume = await dataSource.getCachedGlobalVolume();
 
-      expect(volume, 1.0);
+      expect(volume, 0.4);
     });
 
     test('getCachedGlobalVolume returns parsed double when set', () async {

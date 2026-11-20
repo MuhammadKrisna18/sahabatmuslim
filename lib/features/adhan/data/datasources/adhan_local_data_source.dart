@@ -88,7 +88,7 @@ class AdhanLocalDataSourceImpl implements AdhanLocalDataSource {
       final parsed = double.tryParse(volStr);
       if (parsed != null) return parsed;
     }
-    return 1.0;
+    return 0.4;
   }
 
   @override

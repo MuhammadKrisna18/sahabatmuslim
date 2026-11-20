@@ -30,7 +30,7 @@ class AdhanProvider with ChangeNotifier {
   DateTime _currentTime = DateTime.now();
   final ValueNotifier<DateTime> currentTimeNotifier = ValueNotifier<DateTime>(DateTime.now());
   String _locationName = '';
-  double _globalVolume = 1.0;
+  double _globalVolume = 0.4;
   String? _errorMessage;
 
   List<AdhanSchedule> get schedules => _schedules;

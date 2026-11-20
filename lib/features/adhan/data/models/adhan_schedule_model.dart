@@ -9,7 +9,7 @@ class AdhanScheduleModel extends AdhanSchedule {
     required super.soundUrl,
     super.isLocal = false,
     super.isActive = true,
-    super.volume = 1.0,
+    super.volume = 0.4,
   });
 
   factory AdhanScheduleModel.fromJson(Map<String, dynamic> json) {
@@ -21,7 +21,7 @@ class AdhanScheduleModel extends AdhanSchedule {
       soundUrl: json['soundUrl'],
       isLocal: json['isLocal'] ?? false,
       isActive: json['isActive'] ?? true,
-      volume: json['volume']?.toDouble() ?? 1.0,
+      volume: json['volume']?.toDouble() ?? 0.4,
     );
   }
 
