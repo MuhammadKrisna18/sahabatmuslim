@@ -4,6 +4,11 @@ import 'package:adhan_reminder/features/settings/domain/usecases/get_settings_us
 import 'package:adhan_reminder/features/settings/domain/usecases/save_settings_usecase.dart';
 
 class SettingsProvider with ChangeNotifier {
+  static const double minArabicFontSize = 20.0;
+  static const double maxArabicFontSize = 56.0;
+  static const double minLatinFontSize = 10.0;
+  static const double maxLatinFontSize = 24.0;
+
   final GetSettingsUseCase _getSettingsUseCase;
   final SaveSettingsUseCase _saveSettingsUseCase;
   
@@ -28,7 +33,6 @@ class SettingsProvider with ChangeNotifier {
     final result = await _getSettingsUseCase.execute();
     result.fold(
       (failure) {
-        // Fallback to default if fail
         _settings = AppSettings();
       },
       (settings) {
@@ -50,6 +54,26 @@ class SettingsProvider with ChangeNotifier {
 
   Future<void> setLatinFontSize(double size) async {
     await _updateSettings(_settings.copyWith(latinFontSize: size));
+  }
+
+  Future<void> increaseArabicFontSize([double step = 2.0]) async {
+    final newSize = (_settings.arabicFontSize + step).clamp(minArabicFontSize, maxArabicFontSize);
+    await setArabicFontSize(newSize);
+  }
+
+  Future<void> decreaseArabicFontSize([double step = 2.0]) async {
+    final newSize = (_settings.arabicFontSize - step).clamp(minArabicFontSize, maxArabicFontSize);
+    await setArabicFontSize(newSize);
+  }
+
+  Future<void> increaseLatinFontSize([double step = 1.0]) async {
+    final newSize = (_settings.latinFontSize + step).clamp(minLatinFontSize, maxLatinFontSize);
+    await setLatinFontSize(newSize);
+  }
+
+  Future<void> decreaseLatinFontSize([double step = 1.0]) async {
+    final newSize = (_settings.latinFontSize - step).clamp(minLatinFontSize, maxLatinFontSize);
+    await setLatinFontSize(newSize);
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
