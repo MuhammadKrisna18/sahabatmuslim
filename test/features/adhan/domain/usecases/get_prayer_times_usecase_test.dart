@@ -35,28 +35,22 @@ void main() {
   );
 
   test('should get prayer times result from the repository', () async {
-    // arrange
     when(() => mockRepository.fetchLocationAndCalculatePrayerTimes(tSchedules))
         .thenAnswer((_) async => Right(tResult));
     
-    // act
     final result = await usecase.execute(tSchedules);
     
-    // assert
     expect(result, Right(tResult));
     verify(() => mockRepository.fetchLocationAndCalculatePrayerTimes(tSchedules)).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 
   test('should return location failure when repository fails', () async {
-    // arrange
     when(() => mockRepository.fetchLocationAndCalculatePrayerTimes(tSchedules))
         .thenAnswer((_) async => const Left(LocationFailure('Gagal lokasi')));
     
-    // act
     final result = await usecase.execute(tSchedules);
     
-    // assert
     expect(result, const Left(LocationFailure('Gagal lokasi')));
     verify(() => mockRepository.fetchLocationAndCalculatePrayerTimes(tSchedules)).called(1);
     verifyNoMoreInteractions(mockRepository);

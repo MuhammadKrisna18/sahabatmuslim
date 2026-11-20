@@ -63,7 +63,6 @@ import 'package:adhan_reminder/features/qibla/presentation/providers/qibla_provi
 final getIt = GetIt.instance;
 
 Future<void> setupInjection() async {
-  // Services
   final storageService = StorageService();
   await storageService.init();
   getIt.registerSingleton<StorageService>(storageService);
@@ -76,13 +75,11 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<AdhanAlarmOrchestrator>(
       () => AdhanAlarmOrchestratorImpl(alarmService: getIt<AlarmService>()));
 
-  // Data Sources
   getIt.registerLazySingleton<AdhanLocalDataSource>(
       () => AdhanLocalDataSourceImpl(storageService: getIt<StorageService>()));
   getIt.registerLazySingleton<BookmarkLocalDataSource>(
       () => BookmarkLocalDataSourceImpl(storageService: getIt<StorageService>()));
 
-  // Repositories
   getIt.registerLazySingleton<PrayerTimeRepository>(() => PrayerTimeRepositoryImpl());
   getIt.registerLazySingleton<AdhanScheduleRepository>(
       () => AdhanScheduleRepositoryImpl(localDataSource: getIt<AdhanLocalDataSource>()));
@@ -96,7 +93,6 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<QuranDownloadRepository>(
       () => QuranDownloadRepositoryImpl());
 
-  // UseCases
   getIt.registerLazySingleton<GetPrayerTimesUseCase>(() => GetPrayerTimesUseCase(getIt<PrayerTimeRepository>()));
   getIt.registerLazySingleton<GetSurahsUseCase>(() => GetSurahsUseCase(getIt<QuranRepository>()));
   getIt.registerLazySingleton<GetSurahDetailUseCase>(() => GetSurahDetailUseCase(getIt<QuranRepository>()));
@@ -115,7 +111,6 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<DeleteDownloadedAudioUseCase>(() => DeleteDownloadedAudioUseCase(getIt<QuranDownloadRepository>()));
   getIt.registerLazySingleton<CancelDownloadUseCase>(() => CancelDownloadUseCase(getIt<QuranDownloadRepository>()));
 
-  // Providers
   getIt.registerLazySingleton<QuranDownloadProvider>(() => QuranDownloadProvider(
         getDownloadedAudioUseCase: getIt<GetDownloadedAudioUseCase>(),
         downloadAudioUseCase: getIt<DownloadAudioUseCase>(),

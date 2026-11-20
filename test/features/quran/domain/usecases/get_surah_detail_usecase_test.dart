@@ -28,28 +28,22 @@ void main() {
   final tAyahs = [tAyah];
 
   test('should get list of ayahs from the repository', () async {
-    // arrange
     when(() => mockQuranRepository.getSurahDetail(tNomor))
         .thenAnswer((_) async => Right(tAyahs));
     
-    // act
     final result = await usecase.execute(tNomor);
     
-    // assert
     expect(result, Right(tAyahs));
     verify(() => mockQuranRepository.getSurahDetail(tNomor)).called(1);
     verifyNoMoreInteractions(mockQuranRepository);
   });
 
   test('should return cache failure when repository fails', () async {
-    // arrange
     when(() => mockQuranRepository.getSurahDetail(tNomor))
         .thenAnswer((_) async => const Left(CacheFailure('Error loading ayah')));
     
-    // act
     final result = await usecase.execute(tNomor);
     
-    // assert
     expect(result, const Left(CacheFailure('Error loading ayah')));
     verify(() => mockQuranRepository.getSurahDetail(tNomor)).called(1);
     verifyNoMoreInteractions(mockQuranRepository);

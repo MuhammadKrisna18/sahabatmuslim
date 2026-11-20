@@ -26,28 +26,22 @@ void main() {
   );
 
   test('should get settings from the repository', () async {
-    // arrange
     when(() => mockRepository.getSettings())
         .thenAnswer((_) async => Right(tSettings));
     
-    // act
     final result = await usecase.execute();
     
-    // assert
     expect(result, Right(tSettings));
     verify(() => mockRepository.getSettings()).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 
   test('should return failure when repository fails', () async {
-    // arrange
     when(() => mockRepository.getSettings())
         .thenAnswer((_) async => const Left(CacheFailure('Error')));
     
-    // act
     final result = await usecase.execute();
     
-    // assert
     expect(result, const Left(CacheFailure('Error')));
     verify(() => mockRepository.getSettings()).called(1);
     verifyNoMoreInteractions(mockRepository);

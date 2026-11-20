@@ -51,7 +51,6 @@ class QuranAudioProvider with ChangeNotifier {
   void _handleSkipToPrevious() {
     if (_currentSurah == null) return;
     
-    // Jika durasi sudah lewat 3 detik, rewind ke awal surah
     if (_position.inSeconds > 3) {
       _audioPlayerService.seek(Duration.zero);
       return;
@@ -219,7 +218,7 @@ class QuranAudioProvider with ChangeNotifier {
 
         if (!isSameSurah) {
           await _audioPlayerService.stop();
-          _isPlaying = false; // Hindari race condition
+          _isPlaying = false;
           _currentSurah = surah;
           _isPlaylistBuilt = false;
           notifyListeners();
@@ -236,15 +235,11 @@ class QuranAudioProvider with ChangeNotifier {
         _isBuffering = true;
         notifyListeners();
 
-        // Menonaktifkan mode per-ayat untuk Qori 05 (Mishary Rashid) sesuai permintaan, 
-        // sehingga semua (05, 07, 09) memutar full surah.
         bool canPlayAyah = ayahs != null && ayahs.isNotEmpty && int.parse(_selectedQoriId) <= 6 && _selectedQoriId != '05';
         
-        // Jika tidak mendukung per-ayat, putar full surah
         if (!canPlayAyah) {
           await _playlistManager.buildSingleSurahPlaylist(surah, _selectedQoriId);
         } else {
-          // Play Per Ayat
           await _playlistManager.buildAyahPlaylist(surah, ayahs, _selectedQoriId);
           
           final state = loopModeState;

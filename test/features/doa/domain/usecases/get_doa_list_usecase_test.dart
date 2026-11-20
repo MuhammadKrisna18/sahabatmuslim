@@ -27,28 +27,22 @@ void main() {
   final List<Doa> tDoaList = [tDoa];
 
   test('should get list of doa from the repository', () async {
-    // arrange
     when(() => mockRepository.getDoaList())
         .thenAnswer((_) async => Right(tDoaList));
     
-    // act
     final result = await usecase.execute();
     
-    // assert
     expect(result, Right(tDoaList));
     verify(() => mockRepository.getDoaList()).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 
   test('should return failure when repository fails', () async {
-    // arrange
     when(() => mockRepository.getDoaList())
         .thenAnswer((_) async => const Left(CacheFailure('Error')));
     
-    // act
     final result = await usecase.execute();
     
-    // assert
     expect(result, const Left(CacheFailure('Error')));
     verify(() => mockRepository.getDoaList()).called(1);
     verifyNoMoreInteractions(mockRepository);

@@ -118,11 +118,9 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
   void _toggleAudio() async {
     final quranAudio = context.read<QuranAudioProvider>();
     
-    // Jika sedang memutar surah yang sama, berarti fungsi ini digunakan untuk PAUSE.
     if (quranAudio.isPlaying && quranAudio.currentSurah?.nomor == widget.surah.nomor) {
       _doToggleAudio();
     } else {
-      // Tampilkan dialog pilihan Qori
       _showQoriSelectionDialog();
     }
   }
@@ -238,7 +236,6 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                   onPressed: () {
                     quranAudio.setQori(tempSelectedQoriId);
                     Navigator.pop(context);
-                    // Mulai pemutaran audio
                     _doToggleAudio();
                   },
                   style: ElevatedButton.styleFrom(

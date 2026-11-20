@@ -87,7 +87,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
         _status = DownloadStatus.downloaded;
         _downloadedFilePath = filePath;
       });
-      // Auto trigger installer
       await widget.updateService.installApk(filePath);
     } else {
       setState(() {
@@ -101,7 +100,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
     if (_downloadedFilePath != null) {
       final success = await widget.updateService.installApk(_downloadedFilePath!);
       if (!success && mounted) {
-        // Fallback to browser
         widget.updateService.openInBrowser(widget.updateInfo.htmlUrl);
       }
     }
@@ -123,7 +121,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header Icon
               Center(
                 child: Container(
                   width: 72,
@@ -141,7 +138,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
               ),
               const SizedBox(height: 16),
 
-              // Title
               const Center(
                 child: Text(
                   'Pembaruan Tersedia! 🚀',
@@ -153,7 +149,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
               ),
               const SizedBox(height: 8),
 
-              // Version Badges
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -191,7 +186,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
               ),
               const SizedBox(height: 16),
 
-              // Changelog Box
               Container(
                 constraints: const BoxConstraints(maxHeight: 140),
                 padding: const EdgeInsets.all(12),
@@ -224,7 +218,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
               ),
               const SizedBox(height: 20),
 
-              // Download Status / Progress
               if (_status == DownloadStatus.downloading) ...[
                 LinearProgressIndicator(
                   value: _progress > 0 ? _progress : null,
@@ -249,7 +242,6 @@ class _UpdateDialogState extends State<UpdateDialog> {
                 const SizedBox(height: 12),
               ],
 
-              // Action Buttons
               if (_status == DownloadStatus.initial) ...[
                 ElevatedButton.icon(
                   onPressed: _startDownload,

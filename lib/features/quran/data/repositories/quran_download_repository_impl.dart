@@ -87,7 +87,6 @@ class QuranDownloadRepositoryImpl implements QuranDownloadRepository {
             },
           );
 
-          // Finished successfully, add to shared preferences (avoid duplicates)
           final itemsResult = await getDownloadedItems();
           itemsResult.fold(
             (failure) {},
@@ -102,7 +101,7 @@ class QuranDownloadRepositoryImpl implements QuranDownloadRepository {
             }
           );
           
-          controller.add(1.0); // complete
+          controller.add(1.0);
           await controller.close();
         } catch (e) {
           try {
