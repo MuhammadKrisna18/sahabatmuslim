@@ -1,4 +1,9 @@
 import 'package:get_it/get_it.dart';
+import 'package:adhan_reminder/core/services/prayer_widget_service.dart';
+import 'package:adhan_reminder/features/adhan/domain/services/adhan_alarm_orchestrator.dart';
+import 'package:adhan_reminder/features/adhan/data/datasources/adhan_local_data_source.dart';
+import 'package:adhan_reminder/features/adhan/domain/repositories/adhan_schedule_repository.dart';
+import 'package:adhan_reminder/features/adhan/data/repositories/adhan_schedule_repository_impl.dart';
 import 'package:adhan_reminder/features/quran/data/services/playlist_manager.dart';
 import 'package:adhan_reminder/features/adhan/data/repositories/prayer_time_repository_impl.dart';
 import 'package:adhan_reminder/features/adhan/domain/repositories/prayer_time_repository.dart';
@@ -67,13 +72,20 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<AlarmService>(() => AlarmService());
   getIt.registerLazySingleton<AudioPlayerService>(() => AudioPlayerService());
   getIt.registerLazySingleton<UpdateService>(() => UpdateService());
+  getIt.registerLazySingleton<PrayerWidgetService>(() => PrayerWidgetServiceImpl());
+  getIt.registerLazySingleton<AdhanAlarmOrchestrator>(
+      () => AdhanAlarmOrchestratorImpl(alarmService: getIt<AlarmService>()));
 
   // Data Sources
+  getIt.registerLazySingleton<AdhanLocalDataSource>(
+      () => AdhanLocalDataSourceImpl(storageService: getIt<StorageService>()));
   getIt.registerLazySingleton<BookmarkLocalDataSource>(
       () => BookmarkLocalDataSourceImpl(storageService: getIt<StorageService>()));
 
   // Repositories
   getIt.registerLazySingleton<PrayerTimeRepository>(() => PrayerTimeRepositoryImpl());
+  getIt.registerLazySingleton<AdhanScheduleRepository>(
+      () => AdhanScheduleRepositoryImpl(localDataSource: getIt<AdhanLocalDataSource>()));
   getIt.registerLazySingleton<QuranRepository>(() => QuranRepositoryImpl());
   getIt.registerLazySingleton<DoaRepository>(() => DoaRepositoryImpl());
   getIt.registerLazySingleton<SholatRepository>(() => SholatRepositoryImpl());
@@ -113,8 +125,9 @@ Future<void> setupInjection() async {
       
   getIt.registerLazySingleton<AdhanProvider>(() => AdhanProvider(
         getPrayerTimesUseCase: getIt<GetPrayerTimesUseCase>(),
-        storageService: getIt<StorageService>(),
-        alarmService: getIt<AlarmService>(),
+        scheduleRepository: getIt<AdhanScheduleRepository>(),
+        alarmOrchestrator: getIt<AdhanAlarmOrchestrator>(),
+        prayerWidgetService: getIt<PrayerWidgetService>(),
       ));
   
   getIt.registerLazySingleton<QuranProvider>(() => QuranProvider(

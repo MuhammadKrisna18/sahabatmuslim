@@ -1,29 +1,30 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:home_widget/home_widget.dart';
-import 'package:adhan_reminder/core/services/alarm_service.dart';
+import 'package:adhan_reminder/core/services/prayer_widget_service.dart';
 import 'package:adhan_reminder/features/adhan/domain/entities/adhan_schedule.dart';
-import 'package:adhan_reminder/features/adhan/data/models/adhan_schedule_model.dart';
+import 'package:adhan_reminder/features/adhan/domain/repositories/adhan_schedule_repository.dart';
+import 'package:adhan_reminder/features/adhan/domain/services/adhan_alarm_orchestrator.dart';
 import 'package:adhan_reminder/features/adhan/domain/usecases/get_prayer_times_usecase.dart';
-import 'package:adhan_reminder/core/services/storage_service.dart';
-import 'package:adhan_reminder/core/constants/app_strings.dart';
 
 class AdhanProvider with ChangeNotifier {
   final GetPrayerTimesUseCase _getPrayerTimesUseCase;
-  final StorageService _storage;
-  final AlarmService _alarmService;
+  final AdhanScheduleRepository _scheduleRepository;
+  final AdhanAlarmOrchestrator _alarmOrchestrator;
+  final PrayerWidgetService _prayerWidgetService;
 
   AdhanProvider({
     required GetPrayerTimesUseCase getPrayerTimesUseCase,
-    required StorageService storageService,
-    required AlarmService alarmService,
+    required AdhanScheduleRepository scheduleRepository,
+    required AdhanAlarmOrchestrator alarmOrchestrator,
+    required PrayerWidgetService prayerWidgetService,
   })  : _getPrayerTimesUseCase = getPrayerTimesUseCase,
-        _storage = storageService,
-        _alarmService = alarmService {
+        _scheduleRepository = scheduleRepository,
+        _alarmOrchestrator = alarmOrchestrator,
+        _prayerWidgetService = prayerWidgetService {
     _loadSchedules();
     _startClock();
   }
+
   List<AdhanSchedule> _schedules = [];
   Timer? _clockTimer;
   DateTime _currentTime = DateTime.now();
@@ -38,14 +39,6 @@ class AdhanProvider with ChangeNotifier {
   double get globalVolume => _globalVolume;
   String? get errorMessage => _errorMessage;
 
-  final List<AdhanSchedule> _defaultSchedules = [
-    AdhanSchedule(id: 'Subuh', hour: 4, minute: 21, soundName: AppStrings.defaultAdhanName, soundUrl: AppStrings.defaultAdhanAssetPath),
-    AdhanSchedule(id: 'Dzuhur', hour: 11, minute: 36, soundName: AppStrings.defaultAdhanName, soundUrl: AppStrings.defaultAdhanAssetPath),
-    AdhanSchedule(id: 'Ashar', hour: 14, minute: 57, soundName: AppStrings.defaultAdhanName, soundUrl: AppStrings.defaultAdhanAssetPath),
-    AdhanSchedule(id: 'Maghrib', hour: 17, minute: 29, soundName: AppStrings.defaultAdhanName, soundUrl: AppStrings.defaultAdhanAssetPath),
-    AdhanSchedule(id: 'Isya', hour: 18, minute: 42, soundName: AppStrings.defaultAdhanName, soundUrl: AppStrings.defaultAdhanAssetPath),
-  ];
-
   @override
   void dispose() {
     _clockTimer?.cancel();
@@ -54,52 +47,29 @@ class AdhanProvider with ChangeNotifier {
   }
 
   Future<void> _loadSchedules() async {
-    final String? schedulesJson = _storage.getString('schedules');
-    _locationName = _storage.getString('locationName') ?? '';
-    final volStr = _storage.getString('globalVolume');
-    _globalVolume = volStr != null ? double.parse(volStr) : 1.0;
+    final locationResult = await _scheduleRepository.getLocationName();
+    locationResult.fold((_) {}, (name) => _locationName = name);
 
-    List<AdhanSchedule> loadedSchedules = [];
-    if (schedulesJson != null) {
-      final List<dynamic> decoded = json.decode(schedulesJson);
-      loadedSchedules = decoded.map((e) => AdhanScheduleModel.fromJson(e).toEntity()).toList();
-    }
+    final volumeResult = await _scheduleRepository.getGlobalVolume();
+    volumeResult.fold((_) {}, (vol) => _globalVolume = vol);
 
-    bool isValid = loadedSchedules.length == 5 &&
-        loadedSchedules.every((s) => ['Subuh', 'Dzuhur', 'Ashar', 'Maghrib', 'Isya'].contains(s.id));
+    final schedulesResult = await _scheduleRepository.getSchedules();
+    schedulesResult.fold((_) {}, (loaded) {
+      _schedules = loaded;
+    });
 
-    if (isValid) {
-      _schedules = loadedSchedules.map((s) {
-        if (s.soundUrl == 'assets/makkah.mp3' || s.soundUrl == 'assets/adzan_default.mp3') {
-          return AdhanSchedule(
-            id: s.id,
-            hour: s.hour,
-            minute: s.minute,
-            soundName: AppStrings.defaultAdhanName,
-            soundUrl: AppStrings.defaultAdhanAssetPath,
-            isLocal: s.isLocal,
-            isActive: s.isActive,
-            volume: s.volume,
-          );
-        }
-        return s;
-      }).toList();
-    } else {
-      _schedules = _defaultSchedules;
-      await _saveSchedules();
-    }
     _sortSchedules();
     notifyListeners();
 
     await fetchLocationAndCalculatePrayerTimes();
-    _scheduleAlarms();
+    await _syncAlarms();
   }
 
   Future<void> fetchLocationAndCalculatePrayerTimes() async {
     _errorMessage = null;
     final result = await _getPrayerTimesUseCase.execute(_schedules);
-    result.fold(
-      (failure) {
+    await result.fold(
+      (failure) async {
         _errorMessage = failure.message;
         notifyListeners();
       },
@@ -109,38 +79,33 @@ class AdhanProvider with ChangeNotifier {
         _sortSchedules();
         notifyListeners();
         await _saveSchedules();
-        updateWidgetData();
-      }
+        await updateWidgetData();
+      },
     );
   }
 
   Future<void> updateWidgetData() async {
-    try {
-      final nextSched = nextSchedule;
-      if (nextSched != null) {
-        await HomeWidget.saveWidgetData<String>('next_adhan_name', nextSched.id);
-        await HomeWidget.saveWidgetData<String>('next_adhan_time', nextSched.formattedTime);
-        await HomeWidget.saveWidgetData<String>('location_name', _locationName);
-        await HomeWidget.updateWidget(androidName: 'PrayerWidgetProvider');
-      }
-    } catch (e) {
-      debugPrint('Error updating home widget: $e');
+    final nextSched = nextSchedule;
+    if (nextSched != null) {
+      await _prayerWidgetService.updateWidgetData(
+        nextAdhanName: nextSched.id,
+        nextAdhanTime: nextSched.formattedTime,
+        locationName: _locationName,
+      );
     }
   }
 
   Future<void> _saveSchedules() async {
-    final List<Map<String, dynamic>> encoded =
-        _schedules.map((e) => AdhanScheduleModel.fromEntity(e).toJson()).toList();
-    _storage.setString('schedules', json.encode(encoded));
-    _storage.setString('locationName', _locationName);
-    _storage.setString('globalVolume', _globalVolume.toString());
+    await _scheduleRepository.saveSchedules(_schedules);
+    await _scheduleRepository.saveLocationName(_locationName);
+    await _scheduleRepository.saveGlobalVolume(_globalVolume);
   }
 
   void setGlobalVolume(double volume) {
     _globalVolume = volume;
     notifyListeners();
     _saveSchedules();
-    _scheduleAlarms();
+    _syncAlarms();
   }
 
   void _sortSchedules() {
@@ -163,47 +128,11 @@ class AdhanProvider with ChangeNotifier {
     });
   }
 
-  Future<void> _scheduleAlarms() async {
-    if (kIsWeb) return;
-
-    for (int i = 0; i < _schedules.length; i++) {
-      final schedule = _schedules[i];
-      final alarmId = i + 1;
-
-      if (!schedule.isActive) {
-        await _alarmService.stopAlarm(alarmId);
-        continue;
-      }
-
-      if (await _alarmService.isRinging(alarmId)) {
-        continue;
-      }
-
-      DateTime now = DateTime.now();
-      DateTime alarmTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        schedule.hour,
-        schedule.minute,
-      );
-
-      if (alarmTime.isBefore(now)) {
-        alarmTime = alarmTime.add(const Duration(days: 1));
-      }
-
-      final isFridayDzuhur = schedule.id.toLowerCase() == 'dzuhur' && alarmTime.weekday == DateTime.friday;
-      final displayName = isFridayDzuhur ? "Jum'at" : schedule.id;
-
-      await _alarmService.scheduleAdhan(
-        id: alarmId,
-        dateTime: alarmTime,
-        audioPath: schedule.soundUrl,
-        volume: _globalVolume,
-        title: 'Waktunya Adzan $displayName!',
-        body: 'Jadwal sholat pada ${schedule.formattedTime} telah tiba.',
-      );
-    }
+  Future<void> _syncAlarms() async {
+    await _alarmOrchestrator.syncAlarms(
+      schedules: _schedules,
+      volume: _globalVolume,
+    );
   }
 
   void toggleSchedule(String id, bool isActive) {
@@ -223,7 +152,7 @@ class AdhanProvider with ChangeNotifier {
       _schedules = List.from(_schedules);
       notifyListeners();
       _saveSchedules();
-      _scheduleAlarms();
+      _syncAlarms();
       updateWidgetData();
     }
   }
@@ -246,7 +175,7 @@ class AdhanProvider with ChangeNotifier {
       _schedules = List.from(_schedules);
       notifyListeners();
       _saveSchedules();
-      _scheduleAlarms();
+      _syncAlarms();
       updateWidgetData();
     }
   }
@@ -279,7 +208,6 @@ class AdhanProvider with ChangeNotifier {
 
     int diff;
     if (sMinutes <= nowMinutes) {
-
       diff = (24 * 60 - nowMinutes) + sMinutes;
     } else {
       diff = sMinutes - nowMinutes;
