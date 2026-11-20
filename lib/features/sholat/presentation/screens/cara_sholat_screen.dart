@@ -38,7 +38,7 @@ class _CaraSholatScreenState extends State<CaraSholatScreen> {
         iconTheme: IconThemeData(color: context.textPrimaryColor),
         title: Text(
           'Panduan Sholat',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.jetBrainsMono(
             color: context.textPrimaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,

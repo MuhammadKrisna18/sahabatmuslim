@@ -58,7 +58,7 @@ class _QuranListScreenState extends State<QuranListScreen> {
                         pinned: true,
                         title: Text(
                           'Al-Qur\'an',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.jetBrainsMono(
                             color: context.textPrimaryColor,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,

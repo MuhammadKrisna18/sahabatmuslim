@@ -14,7 +14,7 @@ class AppTheme {
         secondary: AppColors.accent,
         surface: AppColors.surfaceLight,
       ),
-      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.light().textTheme),
+      textTheme: GoogleFonts.jetBrainsMonoTextTheme(ThemeData.light().textTheme),
       useMaterial3: true,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -41,7 +41,7 @@ class AppTheme {
         secondary: AppColors.accent,
         surface: AppColors.surfaceDark,
       ),
-      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
+      textTheme: GoogleFonts.jetBrainsMonoTextTheme(ThemeData.dark().textTheme),
       useMaterial3: true,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,

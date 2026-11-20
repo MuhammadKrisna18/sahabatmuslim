@@ -61,7 +61,7 @@ class DoaScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Text(
                       'Allaahumma rabba haadzihid da\'watit taammah, washshalaatil qaa-imah, aati sayyidanaa muhammadanil wasiilata wal fadhiilah, wab\'atshu maqaamam mahmuudanil ladzii wa\'adtah',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.jetBrainsMono(
                         fontSize: 14,
                         color: context.textPrimaryColor,
                         fontStyle: FontStyle.italic,
@@ -75,7 +75,7 @@ class DoaScreen extends StatelessWidget {
                     ),
                     Text(
                       '"Ya Allah, Tuhan yang memiliki seruan yang sempurna dan shalat yang tetap didirikan, karuniakanlah Nabi Muhammad wasilah (tempat yang luhur) dan keutamaan (derajat yang tinggi), dan bangkitkanlah beliau pada kedudukan yang terpuji yang telah Engkau janjikan kepadanya."',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.jetBrainsMono(
                         fontSize: 14,
                         color: context.textSecondaryColor,
                         height: 1.5,
@@ -97,7 +97,7 @@ class DoaScreen extends StatelessWidget {
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(
                   'SELESAI',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.jetBrainsMono(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,

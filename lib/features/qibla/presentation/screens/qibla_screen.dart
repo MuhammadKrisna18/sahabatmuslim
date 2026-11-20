@@ -30,7 +30,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
         automaticallyImplyLeading: false,
         title: Text(
           'Arah Kiblat',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.jetBrainsMono(
             color: context.textPrimaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,

@@ -38,7 +38,7 @@ class _DoaListScreenState extends State<DoaListScreen> {
         iconTheme: IconThemeData(color: context.textPrimaryColor),
         title: Text(
           'Doa & Dzikir',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.jetBrainsMono(
             color: context.textPrimaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,
